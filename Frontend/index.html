@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="mn" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Их Хар Сүлд ХХК</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    [x-cloak] { display: none !important; }
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .logo-backdrop {
+      opacity: 0.15;
+      filter: brightness(0) invert(1);
+      animation: float 20s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(5deg); }
+    }
+    .btn-card {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.4s ease;
+      animation: fadeInUp 0.8s ease-out forwards;
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    .btn-card:nth-child(1) { animation-delay: 0.3s; }
+    .btn-card:nth-child(2) { animation-delay: 0.5s; }
+    .btn-card:nth-child(3) { animation-delay: 0.7s; }
+    .btn-card:nth-child(4) { animation-delay: 0.9s; }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .btn-card:hover {
+      transform: translateY(-12px) scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    .btn-icon {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.5);
+    }
+  </style>
+</head>
+<body class="h-full flex items-center justify-center relative overflow-hidden">
+
+  <!-- Арын том лого -->
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+    <img src="logo-big.png" 
+         alt="Их Харангуй Сулд Security" 
+         class="logo-backdrop w-9/12 max-w-4xl opacity-15">
+  </div>
+
+  <!-- Гол контент -->
+  <div class="relative z-10 text-center text-white px-6">
+    <h1 class="text-5xl md:text-7xl font-extrabold mb-4 drop-shadow-2xl">
+      ИХ ХАР СҮЛД ХХК
+    </h1>
+    <p class="text-xl md:text-2xl mb-16 opacity-90 font-medium">
+      МЭДЭЭЛЭЛИЙН ХЯНАЛТЫН ТӨВ СИСТЕМ
+    </p>
+
+    <!-- 4 Товчлуур -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 max-w-6xl mx-auto">
+      
+      <!-- Инженер -->
+      <a href="engineer.html" class="btn-card rounded-3xl p-10 text-center group">
+        <div class="w-28 h-28 mx-auto mb-6 rounded-full btn-icon flex items-center justify-center shadow-2xl group-hover:scale-110 transition">
+          <span class="material-icons-round text-6xl text-white">engineering</span>
+        </div>
+        <h2 class="text-3xl font-bold">ИНЖЕНЕР</h2>
+        <p class="mt-2 opacity-80">Техникийн ажилтан</p>
+      </a>
+
+      <!-- Оператор -->
+      <a href="operator.html" class="btn-card rounded-3xl p-10 text-center group">
+        <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-2xl group-hover:scale-110 transition">
+          <span class="material-icons-round text-6xl text-white">headset_mic</span>
+        </div>
+        <h2 class="text-3xl font-bold">ОПЕРАТОР</h2>
+        <p class="mt-2 opacity-80">Дуудлага хүлээн авагч</p>
+      </a>
+
+      <!-- Менежер -->
+      <a href="manager.html" class="btn-card rounded-3xl p-10 text-center group">
+        <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-2xl group-hover:scale-110 transition">
+          <span class="material-icons-round text-6xl text-white">supervisor_account</span>
+        </div>
+        <h2 class="text-3xl font-bold">МЕНЕЖЕР</h2>
+        <p class="mt-2 opacity-80">Удирдлага, тайлан</p>
+      </a>
+
+      <!-- Санхүү / Нягтлан -->
+      <a href="finance.html" class="btn-card rounded-3xl p-10 text-center group">
+        <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-2xl group-hover:scale-110 transition">
+          <span class="material-icons-round text-6xl text-white">account_balance_wallet</span>
+        </div>
+        <h2 class="text-3xl font-bold">НЯГТЛАН</h2>
+        <p class="mt-2 opacity-80">Бараа материал</p>
+      </a>
+
+    </div>
+
+    <footer class="mt-20 text-sm opacity-60">
+      © 2025 Их Хар Сүлд ХХК. Бүх эрх хуулиар хамгаалагдсан.
+    </footer>
+  </div>
+
+</body>
+</html>

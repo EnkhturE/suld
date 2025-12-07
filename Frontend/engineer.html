@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="mn" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Инженерийн Систем</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    [x-cloak] { display: none !important; }
+    .glass { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); }
+    .gradient-header { background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); }
+    .card-hover:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+    canvas { border: 2px dashed #ccc; border-radius: 12px; background: #fff; }
+    .status-waiting { @apply bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-full px-6 py-3 font-bold; }
+    .status-working { @apply bg-blue-100 text-blue-800 border border-blue-300 rounded-full px-6 py-3 font-bold; }
+    .status-done { @apply bg-green-100 text-green-800 border border-green-300 rounded-full px-6 py-3 font-bold; }
+  </style>
+</head>
+<body class="h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+
+<div x-data="engineerApp()" x-cloak class="min-h-screen">
+
+  <!-- НЭВТРЭХ -->
+  <template x-if="!isLoggedIn">
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900">
+      <div class="glass rounded-3xl shadow-2xl p-12 max-w-md w-full">
+        <div class="text-center mb-10">
+          <img src="lobi.png" alt="Лого" class="w-36 mx-auto mb-6 drop-shadow-2xl animate-pulse">
+          <h1 class="text-6xl font-extrabold text-white drop-shadow-2xl">ИНЖЕНЕР</h1>
+          <p class="text-blue-100 text-xl mt-4">Техникийн хяналтын систем</p>
+        </div>
+        <form @submit.prevent="login" class="space-y-8">
+          <input x-model="loginForm.username" placeholder="Инженерийн код" required class="w-full px-8 py-5 rounded-2xl border-2 border-blue-300 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/40 text-xl">
+          <input type="password" x-model="loginForm.password" placeholder="Нууц үг" required class="w-full px-8 py-5 rounded-2xl border-2 border-blue-300 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/40 text-xl">
+          <button type="submit" class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-6 rounded-2xl text-2xl shadow-2xl transform hover:scale-105 transition">
+            НЭВТРЭХ
+          </button>
+        </form>
+        <p class="text-center mt-8 text-blue-200 text-lg">Туршилт: <code class="bg-white/20 px-4 py-2 rounded-xl">engineer / 123</code></p>
+      </div>
+    </div>
+  </template>
+
+  <!-- ГОЛ СИСТЕМ -->
+  <template x-if="isLoggedIn">
+    <div class="flex h-screen overflow-hidden">
+
+      <!-- СИДЭБАР -->
+      <div x-data="{ open: false }" 
+           :class="open ? 'translate-x-0' : '-translate-x-full'" 
+           class="fixed inset-y-0 left-0 z-50 w-80 gradient-header text-white transform transition-all duration-300 lg:translate-x-0 lg:static shadow-2xl">
+
+        <div class="p-8 text-center border-b border-white/20">
+          <img src="lobi.png" alt="Лого" class="w-36 mx-auto mb-6 drop-shadow-2xl animate-pulse">
+          <p class="text-3xl font-bold mt-4">ИНЖЕНЕР</p>
+          <p class="text-xl opacity-90" x-text="user.name"></p>
+        </div>
+
+        <nav class="mt-8 px-4">
+          <template x-for="item in menu" :key="item.id">
+            <a href="#" 
+               @click.prevent="currentView = item.id; open = false"
+               class="flex items-center gap-6 px-8 py-6 my-3 text-lg font-medium rounded-2xl transition-all duration-300 relative overflow-hidden group mx-4"
+               :class="{
+                 'bg-white/30 border-r-8 border-yellow-400 shadow-2xl translate-x-3': currentView === item.id,
+                 'hover:bg-white/20 hover:shadow-xl hover:translate-x-2': currentView !== item.id
+               }">
+              <span class="material-icons-round text-4xl group-hover:scale-110 transition" x-text="item.icon"></span>
+              <span x-text="item.name"></span>
+              <div x-show="currentView === item.id" class="absolute inset-y-0 right-0 w-2 bg-yellow-400"></div>
+            </a>
+          </template>
+        </nav>
+      </div>
+
+      <div x-show="open" @click="open = false" class="fixed inset-0 bg-black/70 z-40 lg:hidden"></div>
+
+      <!-- ГОЛ КОНТЕНТ -->
+      <div class="flex-1 flex flex-col">
+        <header class="bg-white/90 backdrop-blur-xl shadow-xl px-8 py-6 flex items-center justify-between sticky top-0 z-30 border-b">
+          <button @click="open = !open" class="lg:hidden p-4 rounded-xl hover:bg-gray-100">
+            <span class="material-icons-round text-4xl">menu</span>
+          </button>
+          <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-4">
+            <span class="material-icons-round text-5xl text-blue-600" x-text="currentMenuIcon"></span>
+            <span x-text="pageTitle"></span>
+          </h1>
+          <div class="flex items-center gap-6">
+            <span class="hidden lg:block text-xl font-medium text-gray-700" x-text="user.name"></span>
+            <div class="w-14 h-14 bg-gradient-to-br from-teal-600 to-cyan-700 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-xl" x-text="user.name.charAt(0)"></div>
+          </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8 lg:p-12">
+
+          <!-- 1. ХЯНАЛТЫН САМБАР + ӨӨРИЙН АЖЛЫН ЖАГСААЛТ -->
+          <template x-if="currentView === 'dashboard'">
+            <div class="space-y-12">
+              <h2 class="text-4xl font-extrabold text-gray-800">Миний хяналтын самбар</h2>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div class="glass rounded-3xl p-10 text-center border border-blue-200 card-hover">
+                  <span class="material-icons-round text-8xl text-blue-600">pending_actions</span>
+                  <p class="text-6xl font-bold text-blue-700 mt-4" x-text="myActiveTasks.length"></p>
+                  <p class="text-2xl text-gray-600 mt-2">Идэвхтэй ажил</p>
+                </div>
+                <div class="glass rounded-3xl p-10 text-center border border-orange-200 card-hover">
+                  <span class="material-icons-round text-8xl text-orange-600">build</span>
+                  <p class="text-6xl font-bold text-orange-700 mt-4" x-text="myActiveTasks.filter(t => t.status === 'in_progress').length"></p>
+                  <p class="text-2xl text-gray-600 mt-2">Хийж байгаа</p>
+                </div>
+                <div class="glass rounded-3xl p-10 text-center border border-green-200 card-hover">
+                  <span class="material-icons-round text-8xl text-green-600">task_alt</span>
+                  <p class="text-6xl font-bold text-green-700 mt-4" x-text="myActiveTasks.filter(t => t.status === 'done').length"></p>
+                  <p class="text-2xl text-gray-600 mt-2">Дууссан</p>
+                </div>
+              </div>
+
+              <h3 class="text-3xl font-bold mt-16">Миний ажлын жагсаалт</h3>
+              <div class="glass rounded-3xl shadow-2xl overflow-hidden">
+                <table class="min-w-full">
+                  <thead class="gradient-header text-white">
+                    <tr>
+                      <th class="px-8 py-6 text-left text-xl">ID</th>
+                      <th class="px-8 py-6 text-left text-xl">Байгууллага / Салбар</th>
+                      <th class="px-8 py-6 text-left text-xl">Асуудал</th>
+                      <th class="px-8 py-6 text-left text-xl">Төлөв</th>
+                      <th class="px-8 py-6 text-center text-xl">Үйлдэл</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    <template x-for="task in myActiveTasks" :key="task.id">
+                      <tr class="hover:bg-blue-50 transition cursor-pointer" @click="openTaskDetail(task)">
+                        <td class="px-8 py-6 font-bold">#T-<span x-text="task.id"></span></td>
+                        <td class="px-8 py-6" x-text="task.branch"></td>
+                        <td class="px-8 py-6" x-text="task.issue"></td>
+                        <td class="px-8 py-6">
+                          <span :class="task.status === 'waiting' ? 'status-waiting' : (task.status === 'in_progress' ? 'status-working' : 'status-done')">
+                            <template x-if="task.status === 'waiting'">Хүлээгдэж байна</template>
+                            <template x-if="task.status === 'in_progress'">Хийж байна</template>
+                            <template x-if="task.status === 'done'">Дууссан</template>
+                          </span>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                          <button class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold shadow hover:scale-105 transition">
+                            Дэлгэрэнгүй
+                          </button>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </template>
+
+          <!-- 2. ШИНЭ ДУУДЛАГА -->
+          <template x-if="currentView === 'new_calls'">
+            <div class="max-w-7xl mx-auto">
+              <h2 class="text-4xl font-extrabold text-gray-800 mb-10">Шинэ дуудлагууд (Хэн ч аваагүй)</h2>
+              <div class="glass rounded-3xl shadow-2xl overflow-hidden">
+                <table class="min-w-full">
+                  <thead class="gradient-header text-white">
+                    <tr>
+                      <th class="px-8 py-6 text-left text-xl">ID</th>
+                      <th class="px-8 py-6 text-left text-xl">Байгууллага</th>
+                      <th class="px-8 py-6 text-left text-xl">Салбар</th>
+                      <th class="px-8 py-6 text-left text-xl">Гомдол</th>
+                      <th class="px-8 py-6 text-left text-xl">Огноо</th>
+                      <th class="px-8 py-6 text-center text-xl">Үйлдэл</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    <template x-for="call in newCalls" :key="call.id">
+                      <tr class="hover:bg-yellow-50 transition">
+                        <td class="px-8 py-6 font-bold">#T-<span x-text="call.id"></span></td>
+                        <td class="px-8 py-6" x-text="call.org"></td>
+                        <td class="px-8 py-6" x-text="call.branch"></td>
+                        <td class="px-8 py-6" x-text="call.issue"></td>
+                        <td class="px-8 py-6" x-text="call.date"></td>
+                        <td class="px-8 py-6 text-center">
+                          <button @click="takeCall(call)" class="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-bold shadow-lg hover:scale-105 transition">
+                            АВАХ
+                          </button>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </template>
+
+          <!-- 3. МИНИЙ ДУУДЛАГА -->
+          <template x-if="currentView === 'my_calls'">
+            <div class="max-w-7xl mx-auto">
+              <h2 class="text-4xl font-extrabold text-gray-800 mb-10">Миний дуудлагууд</h2>
+              <div class="glass rounded-3xl shadow-2xl overflow-hidden">
+                <table class="min-w-full">
+                  <thead class="gradient-header text-white">
+                    <tr>
+                      <th class="px-8 py-6 text-left text-xl">ID</th>
+                      <th class="px-8 py-6 text-left text-xl">Салбар</th>
+                      <th class="px-8 py-6 text-left text-xl">Гомдол</th>
+                      <th class="px-8 py-6 text-left text-xl">Төлөв</th>
+                      <th class="px-8 py-6 text-center text-xl">Үйлдэл</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    <template x-for="call in myCalls" :key="call.id">
+                      <tr class="hover:bg-blue-50 transition">
+                        <td class="px-8 py-6 font-bold">#T-<span x-text="call.id"></span></td>
+                        <td class="px-8 py-6" x-text="call.branch"></td>
+                        <td class="px-8 py-6" x-text="call.issue"></td>
+                        <td class="px-8 py-6">
+                          <span :class="call.status === 'in_progress' ? 'status-working' : 'status-done'">
+                            <template x-if="call.status === 'in_progress'">Хийж байна</template>
+                            <template x-if="call.status === 'done'">Хаагдсан</template>
+                          </span>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                          <button @click="openTaskDetail(call)" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold">
+                            Дэлгэрэнгүй
+                          </button>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </template>
+
+          <!-- 4. АКТ ҮҮСГЭХ (Засвар үйлчилгээ + Гарын үсэг) -->
+          <template x-if="currentView === 'act'">
+            <div class="max-w-5xl mx-auto">
+              <h2 class="text-4xl font-extrabold text-gray-800 mb-10">Акт үүсгэх</h2>
+              <div class="glass rounded-3xl shadow-2xl p-12 space-y-10">
+                <select x-model="act.type" class="w-full px-8 py-6 rounded-2xl border-2 border-gray-300 text-xl">
+                  <option value="">— Акт сонгоно уу —</option>
+                  <option value="maintenance">Засвар үйлчилгээ</option>
+                  <option value="installation">Суулгалт / Угсралт</option>
+                </select>
+
+                <template x-if="act.type === 'maintenance'">
+                  <div class="space-y-6">
+                    <div>
+                      <label class="text-xl font-bold">Засварласан төхөөрөмж</label>
+                      <input x-model="act.device" placeholder="Жишээ: Камер Hikvision DS-2CD2143G0" class="w-full mt-3 px-8 py-5 rounded-2xl border">
+                    </div>
+                    <div>
+                      <label class="text-xl font-bold">Тоо ширхэг</label>
+                      <input type="number" x-model="act.quantity" class="w-32 mt-3 px-6 py-5 rounded-2xl border">
+                    </div>
+                    <div>
+                      <label class="text-xl font-bold">Нэмэлт мэдээлэл</label>
+                      <textarea x-model="act.notes" rows="5" class="w-full mt-3 px-8 py-5 rounded-2xl border"></textarea>
+                    </div>
+                    <div>
+                      <label class="text-xl font-bold">Зураг хавсаргах</label>
+                      <button @click="$refs.fileInput.click()" class="mt-3 px-8 py-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center gap-3">
+                        <span class="material-icons-round">photo_camera</span> Зураг оруулах
+                      </button>
+                      <input x-ref="fileInput" type="file" accept="image/*" multiple class="hidden" @change="handlePhotos">
+                      <div class="flex gap-4 mt-4" x-show="act.photos.length > 0">
+                        <template x-for="photo in act.photos">
+                          <img :src="photo" class="w-32 h-32 object-cover rounded-xl shadow">
+                        </template>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="text-xl font-bold">Харилцагчийн гарын үсэг</label>
+                      <canvas x-ref="signatureCanvas" width="600" height="200" class="w-full mt-3"></canvas>
+                      <div class="flex gap-4 mt-4">
+                        <button @click="clearSignature" class="px-6 py-3 bg-gray-500 text-white rounded-xl">Цэвэрлэх</button>
+                        <button @click="saveAct" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 rounded-xl">АКТ ҮҮСГЭХ</button>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+
+          <!-- 5. БАРАА МАТЕРИАЛ ХҮҮСЭХ -->
+          <template x-if="currentView === 'material_request'">
+            <div class="max-w-5xl mx-auto">
+              <h2 class="text-4xl font-extrabold text-gray-800 mb-10">Бараа материал хүсэх</h2>
+              <div class="glass rounded-3xl shadow-2xl p-12 space-y-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <template x-for="cat in materialCategories">
+                    <button @click="selectedCategory = cat" :class="selectedCategory === cat ? 'bg-emerald-600 text-white' : 'bg-gray-200'"
+                            class="px-6 py-4 rounded-xl font-bold shadow hover:scale-105 transition">
+                      <span x-text="cat"></span>
+                    </button>
+                  </template>
+                </div>
+                <div x-show="selectedCategory">
+                  <template x-for="item in availableMaterials[selectedCategory]">
+                    <div class="flex items-center justify-between bg-white/60 p-4 rounded-xl mb-3">
+                      <span class="font-bold" x-text="item.name"></span>
+                      <input type="number" x-model="item.requested" placeholder="Тоо" min="0" class="w-24 px-4 py-2 rounded border text-center">
+                    </div>
+                  </template>
+                </div>
+                <input x-model="materialRequest.branch" placeholder="Салбар (дугаар, нэр)" class="w-full px-8 py-5 rounded-2xl border">
+                <button @click="submitMaterialRequest" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold py-7 rounded-2xl text-2xl shadow-2xl hover:scale-105 transition">
+                  ХҮСЭЛТ ИЛГЭЭХ
+                </button>
+              </div>
+            </div>
+          </template>
+
+          <!-- 6. ТӨЛӨВЛӨГӨӨТ АЖИЛ -->
+          <template x-if="currentView === 'planned_work'">
+            <div class="max-w-6xl mx-auto">
+              <h2 class="text-4xl font-extrabold text-gray-800 mb-10">Төлөвлөгөөт ажил</h2>
+              <div class="flex gap-6 mb-8">
+                <button @click="plannedType = 'inspection'" :class="plannedType === 'inspection' ? 'bg-blue-600 text-white' : 'bg-gray-200'" class="px-8 py-5 rounded-xl font-bold">Тоног төхөөрөмжийн шалгалт</button>
+                <button @click="plannedType = 'maintenance'" :class="plannedType === 'maintenance' ? 'bg-emerald-600 text-white' : 'bg-gray-200'" class="px-8 py-5 rounded-xl font-bold">Засвар үйлчилгээ</button>
+              </div>
+              <div class="glass rounded-3xl shadow-2xl p-8">
+                <template x-for="task in plannedTasks[plannedType]">
+                  <div class="flex justify-between items-center bg-white/60 p-6 rounded-xl mb-4">
+                    <div>
+                      <p class="font-bold text-lg" x-text="task.branch"></p>
+                      <p class="text-gray-600" x-text="task.address"></p>
+                    </div>
+                    <button @click="addToToday(task)" class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold">
+                      Өнөөдөр хийх
+                    </button>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+
+          <!-- МОДАЛ: Ажлын дэлгэрэнгүй -->
+          <template x-if="showTaskModal">
+            <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50" @click="showTaskModal = false">
+              <div class="glass rounded-3xl shadow-2xl p-12 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto" @click.stop>
+                <h2 class="text-3xl font-bold mb-6" x-text="selectedTask.branch + ' - Дэлгэрэнгүй'"></h2>
+                <p><strong>Гомдол:</strong> <span x-text="selectedTask.issue"></span></p>
+                <p><strong>Хаяг:</strong> <span x-text="selectedTask.address"></span></p>
+                <p><strong>Хугацаа:</strong> <span x-text="selectedTask.date"></span></p>
+                <div class="h-80 bg-gray-200 rounded-xl mt-6 flex items-center justify-center text-gray-600">
+                  Газрын зураг энд харагдана (iframe эсвэл зураг
+                </div>
+                <button @click="showTaskModal = false" class="mt-8 w-full bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold py-6 rounded-2xl">ХААХ</button>
+              </div>
+            </div>
+          </template>
+
+        </main>
+      </div>
+    </div>
+  </template>
+</div>
+
+<script>
+function engineerApp() {
+  return {
+    isLoggedIn: false,
+    user: { name: 'Инженер Бат' },
+    loginForm: { username: '', password: '' },
+    currentView: 'dashboard',
+    pageTitle: 'Хяналтын самбар',
+
+    menu: [
+      { id: 'dashboard', name: 'Хяналтын самбар', icon: 'dashboard' },
+      { id: 'new_calls', name: 'Шинэ дуудлага', icon: 'add_call' },
+      { id: 'my_calls', name: 'Миний дуудлага', icon: 'build_circle' },
+      { id: 'act', name: 'Акт үүсгэх', icon: 'description' },
+      { id: 'material_request', name: 'Бараа материал хүсэх', icon: 'inventory_2' },
+      { id: 'planned_work', name: 'Төлөвлөгөөт ажил', icon: 'event_note' },
+    ],
+
+    myActiveTasks: [
+      { id: '024', branch: 'Хан-Уул салбар', issue: 'Галын дохиолол ажиллахгүй байна', status: 'in_progress', address: 'Хан-Уул дүүрэг, 15-р хороо', date: '2025 цагийн өмнө' },
+      { id: '023', branch: 'Баянгол салбар', issue: 'Камер дүрс алга', status: 'done', address: 'Баянгол дүүрэг, 3-р хороо', date: '2025-12-07' },
+    ],
+    newCalls: [
+      { id: '025', org: 'Төрийн банк', branch: 'Төв салбар', issue: 'Утаа мэдрэгч дуугарч байна', date: '2025-12-08 10:30' },
+    ],
+    myCalls: [],
+
+    act: { type: '', device: '', quantity: 1, notes: '', photos: [] },
+    selectedCategory: '',
+    materialCategories: ['Утаа мэдрэгч', 'Камер', 'Удийн гар', 'Хөдөлгөөн мэдрэгч'],
+    availableMaterials: {
+      'Утаа мэдрэгч': [{name: 'Heimann', requested: 0}, {name: 'Орос', requested: 0}],
+      'Камер': [{name: 'Hikvision 4MP', requested: 0}],
+    },
+    materialRequest: { branch: '' },
+    plannedType: 'inspection',
+    plannedTasks: {
+      inspection: [{ branch: 'CU - 580', address: 'Сүхбаатар дүүрэг' }],
+      maintenance: [{ branch: 'Хаанбанк - Төв', address: 'Чингэлтэй дүүрэг' }],
+    },
+
+    showTaskModal: false,
+    selectedTask: {},
+
+    get currentMenuIcon() {
+      return this.menu.find(m => m.id === this.currentView)?.icon || 'dashboard';
+    },
+
+    login() {
+      if (this.loginForm.username === 'engineer' && this.loginForm.password === '123') {
+        this.isLoggedIn = true;
+        this.user.name = 'Инженер Бат';
+      } else alert('engineer / 123');
+    },
+
+    takeCall(call) {
+      if (confirm('Энэ дуудлагыг авах уу?')) {
+        call.engineer = this.user.name;
+        call.status = 'in_progress';
+        this.myActiveTasks.push(call);
+        this.newCalls = this.newCalls.filter(c => c.id !== call.id);
+        alert('Амжилттай авлаа!');
+      }
+    },
+
+    openTaskDetail(task) {
+      this.selectedTask = task;
+      this.showTaskModal = true;
+    },
+
+    handlePhotos(e) {
+      const files = e.target.files;
+      for (let file of files) {
+        const reader = new FileReader();
+        reader.onload = (ev) => this.act.photos.push(ev.target.result);
+        reader.readAsDataURL(file);
+      }
+    },
+
+    clearSignature() {
+      const canvas = this.$refs.signatureCanvas;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    },
+
+    saveAct() {
+      alert('Акт амжилттай үүслээ! Гарын үсэг зурсан байна.');
+    },
+
+    submitMaterialRequest() {
+      alert('Бараа материал хүсэлт амжилттай илгээгдлээ!');
+    },
+
+    addToToday(task) {
+      alert(`"${task.branch}" салбарын ажлыг өнөөдрийн төлөвлөгөөнд нэмлээ!`);
+    },
+
+    init() {
+      this.$watch('currentView', v => {
+        const titles = {
+          dashboard: 'Хяналтын самбар',
+          new_calls: 'Шинэ дуудлага',
+          my_calls: 'Миний дуудлага',
+          act: 'Акт үүсгэх',
+          material_request: 'Бараа материал хүсэх',
+          planned_work: 'Төлөвлөгөөт ажил'
+        };
+        this.pageTitle = titles[v] || 'Хяналтын самбар';
+      });
+
+      // Гарын үсгийн canvas
+      this.$nextTick(() => {
+        if (this.$refs.signatureCanvas) {
+          const canvas = this.$refs.signatureCanvas;
+          const ctx = canvas.getContext('2d');
+          let drawing = false;
+          canvas.addEventListener('mousedown', () => drawing = true);
+          canvas.addEventListener('mouseup', () => drawing = false);
+          canvas.addEventListener('mousemove', (e) => {
+            if (!drawing) return;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(e.offsetX, e.offsetY, 4, 4);
+          });
+        }
+      });
+    }
+  }
+}
+</script>
+</body>
+</html>
