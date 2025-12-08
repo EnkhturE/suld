@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="mn" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Гэмтэл Тодорхойлох - Оператор</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    [x-cloak] { display: none !important; }
+    .glass { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); }
+    .gradient-header { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%); }
+    .step { @apply bg-blue-50 p-6 rounded-2xl mb-6 shadow-lg border-l-4 border-blue-500; }
+    .warning { @apply text-red-600 font-bold bg-red-50 p-4 rounded-xl mb-4; }
+    .instruction { @apply bg-green-50 p-6 rounded-2xl mb-6 shadow-md border-l-4 border-green-500; }
+    .type-btn { @apply bg-white hover:bg-blue-50 text-gray-800 font-bold py-6 px-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-200; }
+    .type-btn.selected { @apply bg-blue-600 text-white border-blue-600; }
+  </style>
+</head>
+<body class="h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+
+<div x-data="{ selectedType: null, showFinalButtons: false }" class="min-h-screen p-8 lg:p-12">
+
+  <header class="bg-white/90 backdrop-blur-xl shadow-xl px-8 py-6 mb-12 rounded-3xl text-center">
+    <h1 class="text-4xl font-extrabold text-gray-800 flex items-center justify-center gap-4">
+      <span class="material-icons-round text-5xl text-blue-600">search</span>
+      Гэмтэл Тодорхойлох Асуулт
+    </h1>
+    <p class="text-xl text-gray-600 mt-4">Оператор: Дохиолол, тоног төхөөрөмжийн хэвийн ажиллагааг шалгаж, гэмтэлтэй хэсгийг оншлох</p>
+  </header>
+
+  <main class="max-w-4xl mx-auto space-y-12">
+
+    <!-- Алхам 1: Төрөл сонгох -->
+    <div class="glass rounded-3xl shadow-2xl p-10">
+      <h2 class="text-3xl font-bold mb-8 flex items-center gap-4">
+        <span class="material-icons-round text-4xl text-blue-600">step_one</span>
+        Алхам 1: Төрөл сонгоно уу
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <button @click="selectedType = 1; showFinalButtons = true" :class="{ 'selected': selectedType === 1 }" class="type-btn">
+          <span class="material-icons-round text-5xl mb-4">door_front</span>
+          <p>Хаалт нээлт хийж болохгүй байгаа</p>
+        </button>
+        <button @click="selectedType = 2; showFinalButtons = true" :class="{ 'selected': selectedType === 2 }" class="type-btn">
+          <span class="material-icons-round text-5xl mb-4">notifications_active</span>
+          <p>Siren ажиллаад орилоод байна</p>
+        </button>
+        <button @click="selectedType = 3; showFinalButtons = true" :class="{ 'selected': selectedType === 3 }" class="type-btn">
+          <span class="material-icons-round text-5xl mb-4">person_add</span>
+          <p>Хэрэглэгч үүсгэх устгах</p>
+        </button>
+      </div>
+    </div>
+
+    <!-- Алхам 2: Сонгосон төрлийн асуулт, арга хэмжээ -->
+    <template x-if="selectedType">
+      <div class="glass rounded-3xl shadow-2xl p-10">
+        <h2 class="text-3xl font-bold mb-8 flex items-center gap-4">
+          <span class="material-icons-round text-4xl text-green-600">step_two</span>
+          Алхам 2: Асуулт & Арга хэмжээ
+        </h2>
+
+        <!-- Төрөл 1: Хаалт нээлт -->
+        <template x-if="selectedType === 1">
+          <div class="space-y-6">
+            <p class="text-xl font-semibold mb-4">Оператор асуулт:</p>
+            <div class="step">У/гар дэлгэцтэй юу үгүй юу тодруулах (CNORD / Force станц төрөл тодорхойлох)</div>
+            <div class="step">У/гар гацсан эсэх (Заавар - 2)</div>
+            <div class="step">Код зөв эсэх, код мэдэхгүй тохиолдолд - <span class="warning">((Инженер дуудлага)-код шинэ авах)</span></div>
+            <div class="step">У/гар товчлуур ажиллаж байгаа эсэх <span class="warning">(Инженер дуудлага)</span></div>
+            <div class="step">Утаа мэдэрсэн эсэх шалгах заавар (заавар - 1)</div>
+            <div class="step">Холбоо барих хүний хоёр дугаар авах</div>
+          </div>
+        </template>
+
+        <!-- Төрөл 2: Siren дугарсан -->
+        <template x-if="selectedType === 2">
+          <div class="space-y-6">
+            <p class="text-xl font-semibold mb-4">Яаралтай дуудлага буюу Siren дугарсан (Нээлттэй байх үед)</p>
+            <div class="step">Пүүлтнээс мэдээ шалгах</div>
+            <p class="text-xl font-semibold mb-4">Шалтгаанууд:</p>
+            <div class="step">Утаа мэдэрсэн</div>
+            <div class="step">Галын гар мэдээллэгч дарсан</div>
+            <div class="step">Ус мэдэрсэн</div>
+            <p class="text-xl font-semibold mb-4">Шалтгаан тодорхойлох (Пүүлтнээс)</p>
+            <div class="instruction">Утаа мэдэрсэн эсвэл Галын гар дарагдсан тохиолдолд Fire alarm пүүлтэнд ирдэг</div>
+            <div class="instruction">Ус мэдэрсэн тохиолдолд Medical гэж ирнэ.</div>
+            <p class="text-xl font-semibold mb-4">Шийдвэрлэх</p>
+            <div class="instruction">
+              <p class="font-bold mb-2">CNORD - үед</p>
+              <ul class="list-decimal pl-6 space-y-2">
+                <li>Утаа мэдэрсэн байвал утаа мэдрэгч дээрх гэрэл асаалттай байна (Хэвийн үед асч унтарна.)</li>
+                <li>Утаа мэдрэгч хэвийн байх үед Галын гар мэдээллэгч дарагдсан эсэх шалгах.</li>
+                <li>Орос утаа мэдрэгч Зүүн тийш эргүүлж салгаж авна.</li>
+                <li>Хар өнгийн шүүлтүүрлүү хүчтэй илээж цэвэрлэнэ. (Утаа мэдэрсэн хэвээр байвал <span class="warning">(Инженер дуудлага)-д бүртгэнэ</span>)</li>
+                <li>Станц дээр очиж унтрааж асаах заавар өгнө.</li>
+                <li>Унтрааж асаахдаа</li>
+                <ul class="list-disc pl-6 space-y-1">
+                  <li>Станцны дотор байрлах баттерей + - утас аль нэгийг салгана</li>
+                  <li>Станцруу орсон тогны утастай холбогдсон саарал өнгийн холболтын суурь дээр байрлах хар өнгийн гал хамгаалагчыг татаж салгана</li>
+                  <li>Баттерей буцаж холбоно, Гал хамгаалагч буцааж хийнэ. Ингэснээх станц дахин асах ба энэ үйл явц нь 1-3мин үргэлжилнэ.</li>
+                </ul>
+                <li>Ус мэдэрсэн тохиолдолд: Ус мэдрэгчтэй ойролцоо тогтсон ус цэвэрлэж хатах хүртэл нь хүлээх талаар зөвөлгөө өгнө</li>
+              </ul>
+            </div>
+            <div class="instruction">
+              <p class="font-bold mb-2">FORCE - үед</p>
+              <ul class="list-decimal pl-6 space-y-2">
+                <li>Утаа мэдэрсэн байвал утаа мэдрэгч дээрх гэрэл асаалттай байна (Хэвийн үед асч унтарна.)</li>
+                <li>Утаа мэдрэгч хэвийн байх үед Галын гар мэдээллэгч дарагдсан эсэх шалгах.</li>
+                <li>FORCE тохиромжтой утаа мэдрэгчид нь түгээмэл жишээ нь heimann утаа мэдрэгч бөгөөд үүнийг зүүн тийш эргүүлж салган авна</li>
+                <li>Хар өнгийн шүүлтүүрлүү хүчтэй үлээж цэвэрлэнэ</li>
+                <li>Буцааж сууринд байрлуулах бөгөөд гэрэл асаалттай хэвээр байна уу шалгана (Утаа мэдэрсэн хэвээр байвал <span class="warning">(Инженер дуудлага)-д бүртгэнэ</span>)</li>
+              </ul>
+              <p class="mt-4 font-bold">Сэргээлт хийх</p>
+              <ul class="list-disc pl-6 space-y-2">
+                <li>Удирдлагын гар дээр тойрсон сумтай буцах тэмдэг байх ба үүн дээр 3сек удаан дарсанаар удирдлагын гар дугарна</li>
+                <li>Удирдлагын гар дуут дохио өгөхөд хаалт нээлтийн код оруулж хэвийн болгоно</li>
+              </ul>
+            </div>
+          </div>
+        </template>
+
+        <!-- Төрөл 3: Хэрэглэгч үүсгэх устгах -->
+        <template x-if="selectedType === 3">
+          <div class="space-y-6">
+            <p class="text-xl font-semibold mb-4">Хэрэглэгч үүсгэх / устгах заавар:</p>
+            <div class="step">Хэрэглэгчийн код оруулах (Жишээ: шинэ код: 1234)</div>
+            <div class="step">Устгах бол устгах товч дарна (Инженерээс зөвшөөрөл авах)</div>
+            <div class="warning">Анхаар: Зөвшөөрөлгүй устгахгүй байх!</div>
+          </div>
+        </template>
+      </div>
+    </template>
+
+    <!-- Алхам 3: Үйлдэл товчлуурууд -->
+    <template x-if="showFinalButtons">
+      <div class="glass rounded-3xl shadow-2xl p-10 text-center">
+        <h2 class="text-3xl font-bold mb-8 flex items-center justify-center gap-4">
+          <span class="material-icons-round text-4xl text-red-600">step_three</span>
+          Алхам 3: Үйлдэл сонгоно уу
+        </h2>
+        <div class="flex flex-col md:flex-row gap-6 justify-center">
+          <button @click="alert('Инженер дуудлага амжилттай үүслээ!')" class="px-12 py-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-2xl shadow-2xl hover:scale-105 transition flex items-center justify-center gap-3">
+            <span class="material-icons-round text-3xl">phone_in_talk</span>
+            Инженер дуудлага үүсгэх
+          </button>
+          <button @click="alert('Дуудлагыг амжилттай хаалаа!')" class="px-12 py-6 bg-gradient-to-r from-green-600 to-emerald-700 text-white font-bold rounded-2xl shadow-2xl hover:scale-105 transition flex items-center justify-center gap-3">
+            <span class="material-icons-round text-3xl">check_circle</span>
+            Хаах
+          </button>
+        </div>
+      </div>
+    </template>
+
+  </main>
+
+  <footer class="mt-12 text-center text-gray-600">
+    <a href="operator.html" class="flex items-center justify-center gap-2 text-lg hover:text-blue-600 transition">
+      <span class="material-icons-round">arrow_back</span> Оператор хэсэг рүү буцах
+    </a>
+  </footer>
+
+</div>
+
+</body>
+</html>

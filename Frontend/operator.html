@@ -9,26 +9,19 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <style>
     [x-cloak] { display: none !important; }
-    .glass { 
-      background: rgba(255, 255, 255, 0.97); 
-      backdrop-filter: blur(16px); 
-      border: 1px solid rgba(255,255,255,0.3); 
-    }
-    .gradient-header { 
-      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%); 
-    }
-    .card-hover { 
-      transition: all 0.3s ease; 
-    }
-    .card-hover:hover { 
-      transform: translateY(-8px); 
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
-    }
-    .status-pending { @apply bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-full px-6 py-3 font-bold; }
-    .status-working { @apply bg-blue-100 text-blue-800 border border-blue-300 rounded-full px-6 py-3 font-bold; }
-    .status-closed { @apply bg-green-100 text-green-800 border border-green-300 rounded-full px-6 py-3 font-bold; }
-    .status-open { @apply bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full px-6 py-3 font-bold; }
-    .status-late { @apply bg-red-100 text-red-800 border border-red-300 rounded-full px-6 py-3 font-bold; }
+    .glass { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); }
+    .gradient-header { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%); }
+    .card-hover:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+    .status-pending { @apply bg-yellow-100 text-yellow-800 border border-yellow-300; }
+    .status-working { @apply bg-blue-100 text-blue-800 border border-blue-300; }
+    .status-closed { @apply bg-green-100 text-green-800 border border-green-300; }
+    .status-open { @apply bg-emerald-100 text-emerald-800 border border-emerald-300; }
+    .status-late { @apply bg-red-100 text-red-800 border border-red-300; }
+    .step { @apply bg-blue-50 p-6 rounded-2xl mb-6 shadow-lg border-l-4 border-blue-500; }
+    .warning { @apply text-red-600 font-bold bg-red-50 p-4 rounded-xl mb-4; }
+    .instruction { @apply bg-green-50 p-6 rounded-2xl mb-6 shadow-md border-l-4 border-green-500; }
+    .type-btn { @apply bg-white hover:bg-blue-50 text-gray-800 font-bold py-8 px-10 rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-2 border-transparent cursor-pointer; }
+    .type-btn.selected { @apply bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-blue-600 shadow-indigo-500/50; }
   </style>
 </head>
 <body class="h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -41,7 +34,6 @@
       <div class="glass rounded-3xl shadow-2xl p-12 max-w-md w-full">
         <div class="text-center mb-10">
           <img src="lobi.png" alt="Лого" class="w-36 mx-auto mb-6 drop-shadow-2xl animate-pulse">
-          
           <h1 class="text-6xl font-extrabold text-white drop-shadow-2xl">НЭВТРЭХ</h1>
           <p class="text-blue-100 text-xl mt-4 font-medium">Банкны Удирдлагын Систем</p>
         </div>
@@ -61,86 +53,57 @@
   <template x-if="isLoggedIn">
     <div class="flex h-screen overflow-hidden">
 
-      <!-- СИДЭБАР - ЯГ ИНЖЕНЕРИЙН СИСТЕМ ШИГ ГОЁ, ICON-ТОЙ -->
-      <div x-data="{ open: false }" 
-           :class="open ? 'translate-x-0' : '-translate-x-full'" 
-           class="fixed inset-y-0 left-0 z-50 w-80 gradient-header text-white transform transition-all duration-300 lg:translate-x-0 lg:static shadow-2xl">
-
-        <div class="p-8 text-center border-b border-white/20">
+      <!-- СИДЭБАР -->
+      <div x-data="{ open: false }" :class="open ? 'translate-x-0' : '-translate-x-full'" 
+           class="fixed inset-y-0 left-0 z-50 w-80 gradient-header text-white transform transition lg:translate-x-0 lg:static shadow-2xl">
+        <div class="p-8 border-b border-white/20 text-center">
           <img src="lobi.png" alt="Лого" class="w-36 mx-auto mb-6 drop-shadow-2xl animate-pulse">
-          <p class="text-3xl font-bold mt-4">ОПЕРАТОР</p>
-          <p class="text-xl opacity-90" x-text="user.name"></p>
+          <p class="text-3xl font-bold mt-4">Оператор</p>
+          <p class="text-lg opacity-90" x-text="user.name"></p>
         </div>
-
-        <nav class="mt-8 px-4">
-          <template x-for="item in menu" :key="item.id">
-            <a href="#" 
-               @click.prevent="currentView = item.id; open = false"
-               class="flex items-center gap-6 px-8 py-6 my-3 text-lg font-medium rounded-2xl transition-all duration-300 relative overflow-hidden group mx-4"
-               :class="{
-                 'bg-white/30 border-r-8 border-yellow-400 shadow-2xl translate-x-3': currentView === item.id,
-                 'hover:bg-white/20 hover:shadow-xl hover:translate-x-2': currentView !== item.id
-               }">
-              <span class="material-icons-round text-4xl group-hover:scale-110 transition" x-text="item.icon"></span>
+        <nav class="mt-8">
+          <template x-for="item in menu">
+            <a href="#" @click.prevent="currentView = item.id; $dispatch('close-sidebar')"
+               :class="currentView === item.id ? 'bg-white/25 border-r-8 border-yellow-400 shadow-lg' : 'hover:bg-white/10'"
+               class="flex items-center gap-5 px-10 py-6 text-xl font-semibold transition">
+              <span class="material-icons-round text-4xl" x-text="item.icon"></span>
               <span x-text="item.name"></span>
-              <div x-show="currentView === item.id" class="absolute inset-y-0 right-0 w-2 bg-yellow-400"></div>
             </a>
           </template>
         </nav>
       </div>
 
-      <!-- Мобайл overlay -->
-      <!--<div x-show="open" @click="open = true" class="fixed inset-0 bg-black/70 z-40 lg:hidden"></div>-->
+      <div x-show="open" @click="open = false" class="fixed inset-0 bg-black/70 z-40 lg:hidden"></div>
 
       <!-- ГОЛ КОНТЕНТ -->
       <div class="flex-1 flex flex-col">
-        <header class="bg-white/90 backdrop-blur-xl shadow-xl border-b px-8 py-6 flex items-center justify-between sticky top-0 z-30">
+        <header class="bg-white/90 backdrop-blur-xl shadow-xl border-b border-gray-200 px-8 py-5 flex items-center justify-between sticky top-0 z-30">
           <button @click="open = !open" class="lg:hidden p-4 rounded-xl hover:bg-gray-100">
-            <span class="material-icons-round text-4xl">menu</span>
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
-          <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-4">
-            <span class="material-icons-round text-5xl text-blue-600" x-text="currentMenuIcon"></span>
-            <span x-text="pageTitle"></span>
-          </h1>
+          <h1 class="text-3xl font-bold text-gray-800" x-text="pageTitle"></h1>
           <div class="flex items-center gap-6">
             <span class="hidden lg:block text-xl font-medium text-gray-700" x-text="user.name"></span>
-            <div class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-xl" 
-                 x-text="user.name.charAt(0)"></div>
+            <div class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-xl" x-text="user.name.charAt(0)"></div>
           </div>
         </header>
 
         <main class="flex-1 overflow-y-auto p-8 lg:p-12">
 
-          <!-- 1. ХЯНАЛТЫН САМБАР -->
+          <!-- ХЯНАЛТЫН САМБАР -->
           <template x-if="currentView === 'dashboard'">
             <div class="space-y-12">
               <h2 class="text-4xl font-extrabold text-gray-800">Хяналтын самбар</h2>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="glass rounded-3xl p-10 card-hover text-center border border-blue-200">
-                  <span class="material-icons-round text-8xl text-blue-600">assignment</span>
-                  <p class="text-6xl font-bold text-blue-700 mt-4">24</p>
-                  <p class="text-2xl text-gray-600 mt-2">Нийт дуудлага</p>
-                </div>
-                <div class="glass rounded-3xl p-10 card-hover text-center border border-yellow-200">
-                  <span class="material-icons-round text-8xl text-yellow-600">schedule</span>
-                  <p class="text-6xl font-bold text-yellow-700 mt-4">8</p>
-                  <p class="text-2xl text-gray-600 mt-2">Хүлээгдэж буй</p>
-                </div>
-                <div class="glass rounded-3xl p-10 card-hover text-center border border-orange-200">
-                  <span class="material-icons-round text-8xl text-orange-600">build</span>
-                  <p class="text-6xl font-bold text-orange-700 mt-4">10</p>
-                  <p class="text-2xl text-gray-600 mt-2">Хийгдэж байна</p>
-                </div>
-                <div class="glass rounded-3xl p-10 card-hover text-center border border-green-200">
-                  <span class="material-icons-round text-8xl text-green-600">check_circle</span>
-                  <p class="text-6xl font-bold text-green-700 mt-4">6</p>
-                  <p class="text-2xl text-gray-600 mt-2">Хаагдсан</p>
-                </div>
+                <div class="glass rounded-3xl p-10 card-hover"><div class="text-6xl font-bold text-blue-700">24</div><p class="text-2xl text-gray-600 mt-4">Нийт дуудлага</p></div>
+                <div class="glass rounded-3xl p-10 card-hover"><div class="text-6xl font-bold text-yellow-600">8</div><p class="text-2xl text-gray-600 mt-4">Хүлээгдэж буй</p></div>
+                <div class="glass rounded-3xl p-10 card-hover"><div class="text-6xl font-bold text-orange-600">10</div><p class="text-2xl text-gray-600 mt-4">Хийгдэж байна</p></div>
+                <div class="glass rounded-3xl p-10 card-hover"><div class="text-6xl font-bold text-green-600">6</div><p class="text-2xl text-gray-600 mt-4">Хаагдсан</p></div>
               </div>
             </div>
           </template>
 
-          <!-- 2. ШУУРХАЙ & ИНЖЕНЕР ДУУДЛАГА -->
+          <!-- ШУУРХАЙ & ИНЖЕНЕР ДУУДЛАГА -->
           <template x-if="currentView === 'urgent_call' || currentView === 'engineer_call'">
             <div class="max-w-4xl mx-auto">
               <h2 class="text-4xl font-extrabold text-gray-800 mb-10" x-text="currentView === 'urgent_call' ? 'Шуурхай дуудлага' : 'Инженер дуудлага'"></h2>
@@ -167,7 +130,7 @@
             </div>
           </template>
 
-          <!-- 3. ХААЛТ НЭЭЛТ -->
+          <!-- ХААЛТ НЭЭЛТ -->
           <template x-if="currentView === 'branch_control'">
             <div class="max-w-4xl mx-auto">
               <h2 class="text-4xl font-extrabold text-gray-800 mb-10">Хаалт нээлт</h2>
@@ -183,7 +146,7 @@
             </div>
           </template>
 
-          <!-- 4. ИРЦ БҮРТГЭЛ -->
+          <!-- ИРЦ БҮРТГЭЛ -->
           <template x-if="currentView === 'attendance'">
             <div class="max-w-7xl mx-auto">
               <h2 class="text-4xl font-extrabold text-gray-800 mb-10">Ирц бүртгэл — <span class="text-2xl font-normal text-gray-600" x-text="new Date().toLocaleDateString('mn-MN')"></span></h2>
@@ -244,7 +207,7 @@
             </div>
           </template>
 
-          <!-- 5. ХОЛБОО БАРИХ -->
+          <!-- ХОЛБОО БАРИХ -->
           <template x-if="currentView === 'contacts'">
             <div class="max-w-5xl mx-auto">
               <h2 class="text-4xl font-extrabold text-gray-800 mb-10">Холбоо барих</h2>
@@ -277,6 +240,115 @@
             </div>
           </template>
 
+          <!-- ШИНЭ: ШАЛГАЛТ ХИЙХ -->
+          <template x-if="currentView === 'checking'">
+            <div class="space-y-12">
+              <h2 class="text-5xl font-extrabold text-center text-gray-800 mb-10">
+                Гэмтэл Тодорхойлох Асуулт
+              </h2>
+
+              <!-- Алхам 1: Төрөл сонгох -->
+              <div class="glass rounded-3xl shadow-2xl p-12">
+                <h3 class="text-3xl font-bold mb-10 text-center flex items-center justify-center gap-4">
+                  <span class="material-icons-round text-5xl text-blue-600">filter_1</span>
+                  Төрөл сонгоно уу
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <button @click="selectedType = 'door'" :class="{'type-btn': true, 'selected': selectedType === 'door'}">
+                    <span class="material-icons-round text-7xl mb-4">door_front</span>
+                    <p class="text-xl font-bold">Хаалт нээлт хийж болохгүй байна</p>
+                  </button>
+                  <button @click="selectedType = 'siren'" :class="{'type-btn': true, 'selected': selectedType === 'siren'}">
+                    <span class="material-icons-round text-7xl mb-4 text-red-600">notifications_active</span>
+                    <p class="text-xl font-bold">Siren орилоод байна</p>
+                  </button>
+                  <button @click="selectedType = 'user'" :class="{'type-btn': true, 'selected': selectedType === 'user'}">
+                    <span class="material-icons-round text-7xl mb-4">person_add</span>
+                    <p class="text-xl font-bold">Хэрэглэгч үүсгэх/устгах</p>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Алхам 2: Сонгосон төрлийн асуулт, арга хэмжээ -->
+              <template x-if="selectedType">
+                <div class="glass rounded-3xl shadow-2xl p-12 space-y-8">
+
+                  <!-- Төрөл 1: Хаалт нээлт -->
+                  <template x-if="selectedType === 'door'">
+                    <div>
+                      <h3 class="text-3xl font-bold mb-8 text-blue-700">Хаалт нээлт хийж болохгүй байгаа</h3>
+                      <div class="step">У/гар дэлгэцтэй юу үгүй юу тодруулах (CNORD / Force станц төрөл тодорхойлох)</div>
+                      <div class="step">У/гар гацсан эсэх (Заавар - 2)</div>
+                      <div class="step">Код зөв эсэх, код мэдэхгүй тохиолдолд - <span class="warning">((Инженер дуудлага)-код шинэ авах)</span></div>
+                      <div class="step">У/гар товчлуур ажиллаж байгаа эсэх <span class="warning">(Инженер дуудлага)</span></div>
+                      <div class="step">Утаа мэдэрсэн эсэх шалгах заавар (заавар - 1)</div>
+                      <div class="step">Холбоо барих хүний хоёр дугаар авах</div>
+                    </div>
+                  </template>
+
+                  <!-- Төрөл 2: Siren дугарсан -->
+                  <template x-if="selectedType === 'siren'">
+                    <div>
+                      <h3 class="text-3xl font-bold mb-8 text-red-600">Siren дугарч байна!</h3>
+                      <div class="step text-xl font-bold text-center bg-red-100 p-8 rounded-3xl">Пүүлтнээс яг ямар мэдээ ирснийг шалгана уу!</div>
+                      <div class="grid md:grid-cols-2 gap-6">
+                        <div class="instruction">
+                          <p class="font-bold text-lg">CNORD станц</p>
+                          <ul class="list-decimal pl-6 mt-3 space-y-2">
+                            <li>Утаа мэдрэгч дээрх гэрэл асаалттай юу?</li>
+                            <li>Галын гар дарагдсан эсэх?</li>
+                            <li>Орос утаа мэдрэгчийг зүүн тийш эргүүлж салга</li>
+                            <li>Хар шүүлтүүр рүү хүчтэй үлээж цэвэрлэ</li>
+                            <li>Станц унтрааж асаах заавар өгөх (1-3 мин)</li>
+                          </ul>
+                        </div>
+                        <div class="instruction">
+                          <p class="font-bold text-lg">FORCE станц</p>
+                          <ul class="list-decimal pl-6 mt-3 space-y-2">
+                            <li>Heimann утаа мэдрэгчийг зүүн тийш эргүүлж салга</li>
+                            <li>Шүүлтүүр цэвэрлэх</li>
+                            <li>Удирдлагын гар дээр тойрсон сумтай товчийг 3 секунд дарж сэргээх</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+
+                  <!-- Төрөл 3: Хэрэглэгч үүсгэх/устгах -->
+                  <template x-if="selectedType === 'user'">
+                    <div>
+                      <h3 class="text-3xl font-bold mb-8 text-purple-700">Хэрэглэгч үүсгэх / устгах</h3>
+                      <div class="step">Шинэ хэрэглэгч нэмэх бол: Админ → Хэрэглэгч → Шинэ хэрэглэгч</div>
+                      <div class="step">Устгах бол: Хэрэглэгчийн нэр дээр дарж → Устгах</div>
+                      <div class="warning">Зөвшөөрөлгүй устгаж болохгүй!</div>
+                    </div>
+                  </template>
+
+                  <!-- Алхам 3: Товчлуурууд -->
+                  <div class="text-center pt-8 border-t-4 border-gray-200">
+                    <div class="flex flex-col md:flex-row gap-8 justify-center">
+                      <button @click="alert('Инженер дуудлага амжилттай үүслээ!'); selectedType = null" 
+                              class="px-16 py-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-2xl font-bold rounded-3xl shadow-2xl hover:scale-110 transition flex items-center gap-4">
+                        <span class="material-icons-round text-4xl">build</span>
+                        ИНЖЕНЕР ДУУДЛАГА ҮҮСГЭХ
+                      </button>
+                      <button @click="alert('Дуудлага амжилттай хаагдлаа!'); selectedType = null"
+                              class="px-16 py-8 bg-gradient-to-r from-green-600 to-emerald-700 text-white text-2xl font-bold rounded-3xl shadow-2xl hover:scale-110 transition flex items-center gap-4">
+                        <span class="material-icons-round text-4xl">check_circle</span>
+                        ХААХ
+                      </button>
+                    </div>
+                    <button @click="selectedType = null" class="mt-6 text-blue-600 hover:underline">
+                      ← Буцах, шинээр сонгох
+                    </button>
+                  </div>
+
+                </div>
+              </template>
+
+            </div>
+          </template>
+
         </main>
       </div>
     </div>
@@ -297,13 +369,17 @@ function app() {
     newCall: { customer: '', phone: '', issue: '' },
     branches: branches,
 
+    // ШИНЭ: Шалгалтын хэсгийн state
+    selectedType: null,
+
     menu: [
-      { id: 'dashboard',       name: 'Хяналтын самбар',     icon: 'dashboard' },
-      { id: 'urgent_call',     name: 'Шуурхай дуудлага',    icon: 'warning_amber' },
-      { id: 'engineer_call',   name: 'Инженер дуудлага',    icon: 'build' },
-      { id: 'branch_control',  name: 'Хаалт нээлт',         icon: 'lock_open' },
-      { id: 'attendance',      name: 'Ирц бүртгэл',         icon: 'how_to_reg' },
-      { id: 'contacts',        name: 'Холбоо барих',        icon: 'contacts' },
+      { id: 'dashboard', name: 'Хяналтын самбар', icon: 'dashboard' },
+      { id: 'urgent_call', name: 'Шуурхай дуудлага', icon: 'warning_amber' },
+      { id: 'engineer_call', name: 'Инженер дуудлага', icon: 'build' },
+      { id: 'branch_control', name: 'Хаалт нээлт', icon: 'lock_open' },
+      { id: 'attendance', name: 'Ирц бүртгэл', icon: 'how_to_reg' },
+      { id: 'contacts', name: 'Холбоо барих', icon: 'contacts' },
+      { id: 'checking', name: 'Шалгалт хийх', icon: 'search' },
     ],
 
     attendance: {
@@ -324,10 +400,6 @@ function app() {
     },
 
     branchStatus: { selected: 'main', status: 'open', list: [{id:'main',name:'Төв байр'}] },
-
-    get currentMenuIcon() {
-      return this.menu.find(m => m.id === this.currentView)?.icon || 'dashboard';
-    },
 
     login() {
       if (this.loginForm.username === 'operator' && this.loginForm.password === '123') {
@@ -376,13 +448,19 @@ function app() {
           engineer_call: 'Инженер дуудлага',
           branch_control: 'Хаалт нээлт',
           attendance: 'Ирц бүртгэл',
-          contacts: 'Холбоо барих'
+          contacts: 'Холбоо барих',
+          checking: 'Гэмтэл тодорхойлох'
         };
         this.pageTitle = titles[v] || 'Хяналтын самбар';
       });
     }
   }
 }
+
+document.addEventListener('close-sidebar', () => {
+  const el = document.querySelector('[x-data="{ open: false }"]');
+  if (el && el.__x) el.__x.$data.open = false;
+});
 </script>
 </body>
 </html>
