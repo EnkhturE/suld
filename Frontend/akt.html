@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ИНЖЕНЕРИЙН АКТ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; padding: 20px; }
+            .akt-container { box-shadow: none !important; border: 1px solid #000; }
+        }
+        
+        .akt-border {
+            border: 2px solid #1e40af;
+            position: relative;
+        }
+        
+        .akt-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px solid #3b82f6;
+            pointer-events: none;
+        }
+        
+        .signature-line {
+            border-bottom: 1px solid #000;
+            min-width: 200px;
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Хэвлэх хэсгийн мэдээлэл -->
+        <div class="no-print mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div class="flex items-center gap-3">
+                <span class="material-icons-round text-blue-600">info</span>
+                <div>
+                    <p class="font-bold text-blue-700">Хэвлэх заавар:</p>
+                    <p class="text-blue-600 text-sm">Энэ актыг хэвлэх бол "Хэвлэх" товчийг дарна уу. Хэвлэх цонх гарч ирэхэд:</p>
+                    <ul class="text-blue-600 text-sm ml-5 list-disc mt-1">
+                       
+                        <li>Дэвсгэр график идэвхжүүлнэ</li>
+                        <li>Хэвлэх хэмжээг 100% болгоно</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- АКТЫН ГОЛ БҮРЭЛДЭХҮҮН -->
+        <div class="akt-container akt-border bg-white rounded-lg shadow-xl p-6 md:p-8">
+            <!-- Толгой хэсэг -->
+            <div class="text-center mb-8 border-b pb-6">
+                <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">ИНЖЕНЕРИЙН АКТ</h1>
+                <p class="text-xl text-gray-700">Дохиолол хамгаалалтын тоног төхөөрөмж, дагалдах хэрэгсэл засвар үйлчилгээ үзүүлсэн акт</p>
+                <div class="mt-4 flex justify-center items-center gap-4">
+                    <div class="bg-blue-100 px-4 py-2 rounded-lg">
+                        <span class="font-bold text-blue-700">Акт №:</span>
+                        <span class="ml-2">A-2025-1216</span>
+                    </div>
+                    <div class="bg-blue-100 px-4 py-2 rounded-lg">
+                        <span class="font-bold text-blue-700">Огноо:</span>
+                        <span class="ml-2">2025/12/16</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Инженерийн мэдээлэл -->
+            <div class="mb-8 p-4 bg-blue-50 rounded-lg">
+                <h2 class="text-xl font-bold text-blue-800 mb-3 flex items-center gap-2">
+                    <span class="material-icons-round">engineering</span>
+                    ГҮЙЦЭТГЭСЭН ИНЖЕНЕР
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-700"><span class="font-bold">Овог нэр:</span> Бат Баяр</p>
+                        <p class="text-gray-700"><span class="font-bold">Албан тушаал:</span>Инженер</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-700"><span class="font-bold">Мэргэжил:</span>Техник хангамж</p>
+                        <p class="text-gray-700"><span class="font-bold">Утас:</span> +976 99******</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Гүйцэтгэсэн ажлын мэдээлэл -->
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2">
+                    <span class="material-icons-round">build</span>
+                    ГҮЙЦЭТГЭСЭН АЖЛЫН МЭДЭЭЛЭЛ
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Зүүн тал -->
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-bold text-gray-700 mb-1">Засварласан төхөөрөмж:</h3>
+                            <p class="text-lg p-3 bg-gray-50 rounded border">Утаа мэдрэгч, Heinmann</p>
+                            <p class="text-lg p-3 bg-gray-50 rounded border">Аюулгүйн товч</p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-bold text-gray-700 mb-1">Гүйцэтгэсэн ажлын төрөл:</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-icons-round text-green-600">check_circle</span>
+                                    <span>Суулгах, угсрах ажил</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="material-icons-round text-green-600">check_circle</span>
+                                    <span>Техникийн тохируулга</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="material-icons-round text-green-600">check_circle</span>
+                                    <span>Туршилт, тест хийх</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Баруун тал -->
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-bold text-gray-700 mb-1">Тоо ширхэг:</h3>
+                            <div class="text-lg p-3 bg-gray-50 rounded border">2</div>
+                            <div class="text-lg p-3 bg-gray-50 rounded border">1</div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-bold text-gray-700 mb-1">Ажлын байршил:</h3>
+                            <p class="p-3 bg-gray-50 rounded border">Сүхбаатар дүүрэг, UBH building </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-bold text-gray-700 mb-1">Ажлын хугацаа:</h3>
+                            <p class="p-3 bg-gray-50 rounded border">2025 оны 12 сарын 16, 09:00-13:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Нэмэлт мэдээлэл -->
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-blue-800 mb-3 flex items-center gap-2">
+                    <span class="material-icons-round">description</span>
+                    НЭМЭЛТ МЭДЭЭЛЭЛ
+                </h2>
+                <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p class="text-gray-700">Сүлжээнд холбож, тохируулга хийсэн. Төхөөрөмж бүрэн ажиллагаатай, мэдээ дамжуулж тест хийсэн, алдаа гараагүй.</p>
+                </div>
+            </div>
+
+            <!-- Хэрэглэгчийн мэдээлэл -->
+            <div class="mb-8 p-4 bg-green-50 rounded-lg">
+                <h2 class="text-xl font-bold text-green-800 mb-3 flex items-center gap-2">
+                    <span class="material-icons-round">person</span>
+                    ХЭРЭГЛЭГЧИЙН МЭДЭЭЛЭЛ
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-700"><span class="font-bold">Байгууллага:</span>CU</p>
+                        <p class="text-gray-700"><span class="font-bold">Хариуцсан хүн:</span> М.Болд</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-700"><span class="font-bold">Утас:</span> +976 11******</p>
+                        <p class="text-gray-700"><span class="font-bold">Имэйл:</span> bold.m@cu.mn</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Гарын үсэг, баталгаажуулалт -->
+            <div class="mt-12 pt-8 border-t">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Инженерийн гарын үсэг -->
+                    <div class="text-center">
+                        <h3 class="font-bold text-gray-700 mb-6">ГҮЙЦЭТГЭСЭН ИНЖЕНЕР</h3>
+                        <div class="h-32 border-b border-gray-400 mb-4 flex items-end justify-center">
+                            <div class="text-center">
+                                <div class="signature-line"></div>
+                                <p class="text-sm text-gray-600 mt-2">Гарын үсэг</p>
+                            </div>
+                        </div>
+                        <p class="font-bold">Бат баяр</p>
+                        <p class="text-gray-600">Ерөнхий инженер</p>
+                        <p class="text-gray-500 text-sm mt-2">Огноо: 2025/12/16</p>
+                    </div>
+                    
+                    <!-- Хэрэглэгчийн гарын үсэг -->
+                    <div class="text-center">
+                        <h3 class="font-bold text-gray-700 mb-6">ХЭРЭГЛЭГЧИЙН БАТАЛГАА</h3>
+                        <div class="h-32 border-b border-gray-400 mb-4 flex items-end justify-center">
+                            <div class="text-center">
+                                <div class="signature-line"></div>
+                                <p class="text-sm text-gray-600 mt-2">Гарын үсэг</p>
+                            </div>
+                        </div>
+                        <p class="font-bold">М.БОЛД</p>
+                        <p class="text-gray-600">Салбарын менежер</p>
+                        <p class="text-gray-500 text-sm mt-2">Огноо: 2025/12/16</p>
+                    </div>
+                </div>
+                
+                <!-- Баталгаажуулалтын тэмдэглэл -->
+                <div class="mt-8 text-center">
+                    <div class="inline-flex items-center gap-2 p-3 bg-green-100 rounded-lg">
+                        <span class="material-icons-round text-green-600">verified</span>
+                        <span class="text-green-700 font-bold">Ажил амжилттай дууссан, бүх шалгуурыг хангасан</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Товчлуурууд -->
+        <div class="no-print mt-8 flex flex-wrap gap-4 justify-center">
+            <button onclick="window.print()" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-bold shadow hover:bg-blue-700 transition flex items-center gap-2">
+                <span class="material-icons-round">print</span>
+                АКТ ХЭВЛЭХ
+            </button>
+            <button onclick="downloadAsPDF()" class="px-6 py-3 bg-green-600 text-white rounded-lg font-bold shadow hover:bg-green-700 transition flex items-center gap-2">
+                <span class="material-icons-round">download</span>
+                PDF ХАДГАЛАХ
+            </button>
+            <button onclick="shareAkt()" class="px-6 py-3 bg-purple-600 text-white rounded-lg font-bold shadow hover:bg-purple-700 transition flex items-center gap-2">
+                <span class="material-icons-round">share</span>
+                ХУВААЛЦАХ
+            </button>
+            <button onclick="location.reload()" class="px-6 py-3 bg-gray-600 text-white rounded-lg font-bold shadow hover:bg-gray-700 transition flex items-center gap-2">
+                <span class="material-icons-round">refresh</span>
+                ШИНЭ АКТ ҮҮСГЭХ
+            </button>
+        </div>
+        
+        <!-- Хэвлэхэд зориулсан нууц код -->
+        <div class="print-only text-center mt-4 text-xs text-gray-500">
+            Баталгаажуулах код: A-2025-1216-30-11-2025-BI
+        </div>
+    </div>
+
+    <script>
+        // PDF хадгалах функц (chrome-д ажиллана)
+        function downloadAsPDF() {
+            const printButton = document.querySelector('[onclick="window.print()"]');
+            const originalText = printButton.innerHTML;
+            
+            printButton.innerHTML = '<span class="material-icons-round">hourglass_empty</span> Бэлдэж байна...';
+            printButton.disabled = true;
+            
+            setTimeout(() => {
+                window.print();
+                printButton.innerHTML = originalText;
+                printButton.disabled = false;
+            }, 1000);
+        }
+        
+        // Хуваалцах функц
+        function shareAkt() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Инженерийн Акт',
+                    text: 'Инженерийн засвар үйлчилгээний акт - Акт дугаар: A-2023-0016',
+                    url: window.location.href
+                })
+                .then(() => console.log('Амжилттай хуваалцлаа'))
+                .catch(error => console.log('Хуваалцахад алдаа гарлаа:', error));
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const textArea = document.createElement('textarea');
+                textArea.value = window.location.href;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Холбоосыг хавсрагласан болно. Одоо та холбоосоо хуваалцах боломжтой.');
+            }
+        }
+        
+        // Хэвлэхэд бэлтгэх
+        window.addEventListener('beforeprint', () => {
+            document.body.classList.add('printing');
+        });
+        
+        window.addEventListener('afterprint', () => {
+            document.body.classList.remove('printing');
+        });
+        
+        // QR код үүсгэх (хэрэгтэй бол)
+        function generateQRCode() {
+            const qrData = `АКТ №: A-2023-0016
+Инженер: БАТ ИНЖЕНЕР
+Огноо: 2023/11/30
+Төхөөрөмж: Камер Hikvision
+Баталгаажуулах код: A-2023-0016-30-11-2023-BI`;
+            
+            // QR код үүсгэх логик энд орох болно
+            console.log('QR код үүсгэх өгөгдөл:', qrData);
+            alert('QR код үүсгэх функц идэвхжлээ. Хэрэв та QR код сканнердвал дээрх мэдээлэл харагдах болно.');
+        }
+        
+        // Автоматаар QR код үүсгэх
+        window.addEventListener('load', () => {
+            setTimeout(generateQRCode, 2000);
+        });
+    </script>
+</body>
+</html>
