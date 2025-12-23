@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СҮЛД AI Чат</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e0e0e0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 85vh;
+            background: rgba(20, 20, 40, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #00e5ff;
+            color: #000;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 12px 18px;
+            border-radius: 18px;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+        .user {
+            align-self: flex-end;
+            background: #00e5ff;
+            color: #000;
+            border-bottom-right-radius: 4px;
+        }
+        .ai {
+            align-self: flex-start;
+            background: #1e1e3f;
+            border: 1px solid #00e5ff;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background: #1a1a2e;
+            border-top: 1px solid #00e5ff;
+        }
+        input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 30px;
+            background: #2a2a4a;
+            color: white;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        button {
+            margin-left: 10px;
+            padding: 0 25px;
+            background: #00e5ff;
+            color: #000;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #00b8d4;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        }
+        .typing {
+            font-style: italic;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">СҮЛД СИСТЕМ – Ухаалаг Ассистент</div>
+        <div class="messages" id="messages">
+            <div class="message ai">
+                Сайн байна уу! Би СҮЛД системийн ухаалаг ассистент. 
+                Аюулгүй байдал, хяналт, ирээдүйн боломжуудын талаар асуугаарай – би бүрэн хариулна 😊
+            </div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Мессеж бичнэ үү..." autocomplete="off">
+            <button onclick="sendMessage()">Илгээх</button>
+        </div>
+    </div>
+
+    <script>
+        const responses = [
+            "СҮЛД систем нь Data Lake дээр суурилсан учраас таны бүх өгөгдлийг нэгдсэн байдлаар хадгалж, гүнзгий шинжилгээ хийдэг.",
+            "Ирээдүйд манай AI таны дуудлагыг хүлээж авахгүй – урьдчилан таамаглаж, сэргийлнэ!",
+            "Шуурхай бүлгийн байршлыг автоматаар оновчтой болгох боломж бидэнд бий – хариу өгөх хугацаа 40% буурна.",
+            "Таны өгөгдөл 100% хамгаалагдсан, шифрлэгдсэн байдаг. Аюулгүй байдал бол бидний нэгдүгээр зорилго.",
+            "Оператор дуудлага хүлээн авмагц би автоматаар зөвлөмж, заавар санал болгодог.",
+            "Танд demo хэрэгтэй юу? suld.dev дээрх бүрэн хувилбарыг туршаад үзээрэй!",
+            "Бид Монголд зориулагдсан, монгол хэлтэй систем – таны хэрэгцээнд яг таарна.",
+            "Манай систем модульчлагдсан: шаардлагатай хэсгээ л нэвтрүүлээрэй.",
+            "Та яг ямар асуудал шийдэхийг хүсэж байна вэ? Би тусалъя!"
+        ];
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            // Хэрэглэгчийн мессеж
+            addMessage(msg, 'user');
+            input.value = '';
+
+            // AI хариу өгөх
+            setTimeout(() => {
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse, 'ai');
+            }, 800 + Math.random() * 1000);
+        }
+
+        function addMessage(text, sender) {
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            div.textContent = text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Enter дарж илгээх
+        document.getElementById('userInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
