@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="mn">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
             justify-content: center;
             align-items: center;
         }
+
         .chat-container {
             width: 90%;
             max-width: 800px;
@@ -27,6 +29,7 @@
             display: flex;
             flex-direction: column;
         }
+
         .header {
             background: #00e5ff;
             color: #000;
@@ -34,13 +37,15 @@
             text-align: center;
             font-size: 24px;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
+
         .messages {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
         }
+
         .message {
             margin: 10px 0;
             padding: 12px 18px;
@@ -48,12 +53,14 @@
             max-width: 80%;
             line-height: 1.5;
         }
+
         .user {
             align-self: flex-end;
             background: #00e5ff;
             color: #000;
             border-bottom-right-radius: 4px;
         }
+
         .ai {
             align-self: flex-start;
             background: #1e1e3f;
@@ -61,12 +68,14 @@
             border-bottom-left-radius: 4px;
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
+
         .input-area {
             display: flex;
             padding: 15px;
             background: #1a1a2e;
             border-top: 1px solid #00e5ff;
         }
+
         input {
             flex: 1;
             padding: 15px;
@@ -76,10 +85,12 @@
             color: white;
             font-size: 16px;
         }
+
         input:focus {
             outline: none;
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
+
         button {
             margin-left: 10px;
             padding: 0 25px;
@@ -91,22 +102,25 @@
             font-weight: bold;
             transition: 0.3s;
         }
+
         button:hover {
             background: #00b8d4;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
         }
+
         .typing {
             font-style: italic;
             color: #888;
         }
     </style>
 </head>
+
 <body>
     <div class="chat-container">
         <div class="header">СҮЛД СИСТЕМ – Ухаалаг Ассистент</div>
         <div class="messages" id="messages">
             <div class="message ai">
-                Сайн байна уу! Би СҮЛД системийн ухаалаг ассистент. 
+                Сайн байна уу! Би СҮЛД системийн ухаалаг ассистент.
                 Аюулгүй байдал, хяналт, ирээдүйн боломжуудын талаар асуугаарай – би бүрэн хариулна 😊
             </div>
         </div>
@@ -117,41 +131,58 @@
     </div>
 
     <script>
-        const response = await fetch('https://enkhtur.app.n8n.cloud/webhook-test/suld-ai', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: msg })
-});
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const msg = input.value.trim();
+        if (!msg) return;
 
-        function sendMessage() {
-            const input = document.getElementById('userInput');
-            const msg = input.value.trim();
-            if (!msg) return;
+        // Хэрэглэгчийн мессеж нэмэх
+        addMessage(msg, 'user');
+        input.value = '';
 
-            // Хэрэглэгчийн мессеж
-            addMessage(msg, 'user');
-            input.value = '';
+        // "Бичиж байна..." эффект
+        const typingDiv = addMessage('Бичиж байна...', 'ai');
+        typingDiv.classList.add('typing');
 
-            // AI хариу өгөх
-            setTimeout(() => {
-                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                addMessage(randomResponse, 'ai');
-            }, 800 + Math.random() * 1000);
+        try {
+            // n8n webhook руу илгээх
+            const response = await fetch('https://enkhtur.app.n8n.cloud/webhook/suld-ai', {  // Эндээс /webhook-test/ устгасан – зөв URL!
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+
+            const data = await response.json();
+
+            // "Бичиж байна..." устгаад жинхэнэ хариу нэмэх
+            typingDiv.remove();
+            addMessage(data.reply || "Уучлаарай, хариу ирсэнгүй.", 'ai');
+        } catch (error) {
+            typingDiv.remove();
+            addMessage("Алдаа гарлаа. Дахин оролдоно уу.", 'ai');
         }
+    }
 
-        function addMessage(text, sender) {
-            const messages = document.getElementById('messages');
-            const div = document.createElement('div');
-            div.className = `message ${sender}`;
-            div.textContent = text;
-            messages.appendChild(div);
-            messages.scrollTop = messages.scrollHeight;
-        }
+    function addMessage(text, sender) {
+        const messages = document.getElementById('messages');
+        const div = document.createElement('div');
+        div.className = `message ${sender}`;
+        div.textContent = text;
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return div;
+    }
 
-        // Enter дарж илгээх
-        document.getElementById('userInput').addEventListener('keypress', e => {
-            if (e.key === 'Enter') sendMessage();
-        });
-    </script>
+    // Enter дарж илгээх
+    document.getElementById('userInput').addEventListener('keypress', e => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    // Хуудас нээгдэхэд эхний мессеж
+    window.onload = () => {
+        addMessage("Сайн байна уу! Би СҮЛД системийн ухаалаг ассистент. Аюулгүй байдал, хяналт, дуудлага хариулах талаар асуугаарай – би дэлгэрэнгүй хариулна 😊", 'ai');
+    };
+</script>
 </body>
+
 </html>
