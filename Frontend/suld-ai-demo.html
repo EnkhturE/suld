@@ -155,7 +155,7 @@
 
             typingDiv.remove();
             // Энд n8n-ээс яг ямар талбараар ирж байгааг ашигла (text эсвэл reply)
-            addMessage(data.text || data.reply || "Уучлаарай, хариу ирсэнгүй.", 'ai');
+            addMessage(data.reply || data.text || data.content || "Уучлаарай, хариу ирсэнгүй.", 'ai');
         } catch (error) {
             typingDiv.remove();
             addMessage("Алдаа гарлаа. Сервертэй холбогдож чадсангүй.", 'ai');
