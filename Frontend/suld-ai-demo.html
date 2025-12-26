@@ -4,21 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Оператор - Ухаалаг Туслагч</title>
-  
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Alpine.js -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  
-  <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  
-  <!-- n8n Chat CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
-  
   <style>
-    [x-cloak] { display: none !important; }
     .glass { 
       background: rgba(255, 255, 255, 0.97); 
       backdrop-filter: blur(16px); 
@@ -92,7 +81,7 @@
         </div>
       </template>
 
-      <!-- Ухаалаг туслагч (шууд эндээс эхэлнэ) -->
+      <!-- Ухаалаг туслагч - iframe-ээр -->
       <template x-if="currentView === 'ai_assistant'">
         <div class="h-full flex flex-col">
           <div class="glass rounded-3xl shadow-2xl flex-1 overflow-hidden flex flex-col">
@@ -103,7 +92,11 @@
               </h3>
               <p class="text-xl mt-2 opacity-90">Танд юугаар туслах вэ? 🛡️</p>
             </div>
-            <div id="n8n-chat-container" class="flex-1 bg-gray-50"></div>
+            <iframe 
+              src="https://enkhtur.app.n8n.cloud/webhook/956a3561-2f91-4b22-94d2-daaeefb400fa/chat"
+              class="flex-1 w-full border-0"
+              allowfullscreen>
+            </iframe>
           </div>
         </div>
       </template>
@@ -111,26 +104,6 @@
     </main>
   </div>
 </div>
-
-<!-- n8n чат ачаалах -->
-<script type="module">
-  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-
-  // Хуудас нээгдмэгц чатыг шууд ачаална
-  document.addEventListener('DOMContentLoaded', () => {
-    createChat({
-      webhookUrl: 'https://enkhtur.app.n8n.cloud/webhook/956a3561-2f91-4b22-94d2-daaeefb400fa',
-      target: '#n8n-chat-container',
-      mode: 'fullscreen',
-      title: 'Их Хар Сүлд AI Туслагч',
-      placeholder: 'Асуултаа бичнэ үү...',
-      welcomeMessage: 'Сайн байна уу! 🛡️\nТанд юугаар туслах вэ?',
-      primaryColor: '#3b82f6',
-      backgroundColor: '#f3f4f6',
-      showWelcomeScreen: true,
-    });
-  });
-</script>
 
 </body>
 </html>
