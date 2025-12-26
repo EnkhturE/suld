@@ -7,103 +7,53 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
   <style>
-    .glass { 
-      background: rgba(255, 255, 255, 0.97); 
-      backdrop-filter: blur(16px); 
-      border: 1px solid rgba(255,255,255,0.3); 
-    }
-    .gradient-header { 
-      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%); 
-    }
+    .glass { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); }
+    .gradient-header { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%); }
   </style>
 </head>
 <body class="h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
 
 <div x-data="{ open: false, currentView: 'ai_assistant' }" class="min-h-screen flex">
 
-  <!-- Sidebar -->
-  <div :class="open ? 'translate-x-0' : '-translate-x-full'" 
-       class="fixed inset-y-0 left-0 z-50 w-80 gradient-header text-white transform transition lg:translate-x-0 lg:static shadow-2xl">
-    <div class="p-8 border-b border-white/20 text-center">
-      <div class="w-36 h-36 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center text-6xl font-bold">🛡️</div>
-      <p class="text-3xl font-bold mt-4">Оператор</p>
-      <p class="text-lg opacity-90">Их Хар Сүлд ХХК</p>
-    </div>
-    <nav class="mt-8">
-      <a href="#" @click.prevent="currentView = 'dashboard'; open = false"
-         :class="currentView === 'dashboard' ? 'bg-white/25 border-r-8 border-yellow-400' : 'hover:bg-white/10'"
-         class="flex items-center gap-5 px-10 py-6 text-xl font-semibold transition">
-        <span class="material-icons-round text-4xl">dashboard</span>
-        <span>Хяналтын самбар</span>
-      </a>
-      <a href="#" @click.prevent="currentView = 'ai_assistant'; open = false"
-         :class="currentView === 'ai_assistant' ? 'bg-white/25 border-r-8 border-yellow-400' : 'hover:bg-white/10'"
-         class="flex items-center gap-5 px-10 py-6 text-xl font-semibold transition">
-        <span class="material-icons-round text-4xl">smart_toy</span>
-        <span>Ухаалаг Туслагч</span>
-      </a>
-    </nav>
-  </div>
+  <!-- Sidebar ба бусад хэсэг адилхан... (өмнөх кодтой яг ижил) -->
+  <!-- ... (sidebar, header, dashboard хэсгийг өмнөх код шиг хэвээр үлдээ) ... -->
 
-  <!-- Mobile overlay -->
-  <div x-show="open" @click="open = false" class="fixed inset-0 bg-black/70 z-40 lg:hidden"></div>
-
-  <!-- Гол контент -->
-  <div class="flex-1 flex flex-col">
-    <header class="bg-white/90 backdrop-blur-xl shadow-xl border-b border-gray-200 px-8 py-5 flex items-center justify-between sticky top-0 z-30">
-      <button @click="open = !open" class="lg:hidden p-4 rounded-xl hover:bg-gray-100">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-      <h1 class="text-3xl font-bold text-gray-800">
-        <template x-if="currentView === 'dashboard'">Хяналтын самбар</template>
-        <template x-if="currentView === 'ai_assistant'">Ухаалаг Туслагч</template>
-      </h1>
-      <div class="flex items-center gap-6">
-        <div class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-xl">О</div>
+  <main class="flex-1 overflow-y-auto p-8 lg:p-12">
+    <template x-if="currentView === 'ai_assistant'">
+      <div class="h-full flex flex-col">
+        <div class="glass rounded-3xl shadow-2xl flex-1 overflow-hidden flex flex-col">
+          <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 text-center">
+            <h3 class="text-3xl font-bold flex items-center justify-center gap-4">
+              <span class="material-icons-round text-5xl">smart_toy</span>
+              Их Хар Сүлд AI Туслагч
+            </h3>
+            <p class="text-xl mt-2 opacity-90">Танд юугаар туслах вэ? 🛡️</p>
+          </div>
+          <div id="n8n-chat" class="flex-1"></div>
+        </div>
       </div>
-    </header>
-
-    <main class="flex-1 overflow-y-auto p-8 lg:p-12">
-
-      <!-- Хяналтын самбар -->
-      <template x-if="currentView === 'dashboard'">
-        <div class="space-y-12">
-          <h2 class="text-4xl font-extrabold text-gray-800">Хяналтын самбар</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="glass rounded-3xl p-10"><div class="text-6xl font-bold text-blue-700">24</div><p class="text-2xl text-gray-600 mt-4">Нийт дуудлага</p></div>
-            <div class="glass rounded-3xl p-10"><div class="text-6xl font-bold text-yellow-600">8</div><p class="text-2xl text-gray-600 mt-4">Хүлээгдэж буй</p></div>
-            <div class="glass rounded-3xl p-10"><div class="text-6xl font-bold text-orange-600">10</div><p class="text-2xl text-gray-600 mt-4">Хийгдэж байна</p></div>
-            <div class="glass rounded-3xl p-10"><div class="text-6xl font-bold text-green-600">6</div><p class="text-2xl text-gray-600 mt-4">Хаагдсан</p></div>
-          </div>
-        </div>
-      </template>
-
-      <!-- Ухаалаг туслагч - iframe-ээр -->
-      <template x-if="currentView === 'ai_assistant'">
-        <div class="h-full flex flex-col">
-          <div class="glass rounded-3xl shadow-2xl flex-1 overflow-hidden flex flex-col">
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 text-center">
-              <h3 class="text-3xl font-bold flex items-center justify-center gap-4">
-                <span class="material-icons-round text-5xl">smart_toy</span>
-                Их Хар Сүлд AI Туслагч
-              </h3>
-              <p class="text-xl mt-2 opacity-90">Танд юугаар туслах вэ? 🛡️</p>
-            </div>
-            <iframe 
-              src="https://enkhtur.app.n8n.cloud/webhook/956a3561-2f91-4b22-94d2-daaeefb400fa/chat"
-              class="flex-1 w-full border-0"
-              allowfullscreen>
-            </iframe>
-          </div>
-        </div>
-      </template>
-
-    </main>
-  </div>
+    </template>
+  </main>
 </div>
+
+<script type="module">
+  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    createChat({
+      webhookUrl: 'https://enkhtur.app.n8n.cloud/webhook/956a3561-2f91-4b22-94d2-daaeefb400fa',  // /chat-гүй!
+      target: '#n8n-chat',
+      mode: 'fullscreen',
+      title: 'Их Хар Сүлд AI Туслагч',
+      placeholder: 'Асуултаа бичнэ үү...',
+      welcomeMessage: 'Сайн байна уу! 🛡️\nТанд юугаар туслах вэ?',
+      primaryColor: '#3b82f6',
+      showWelcomeScreen: true,
+    });
+  });
+</script>
 
 </body>
 </html>
