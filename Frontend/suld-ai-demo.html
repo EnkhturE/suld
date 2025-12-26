@@ -1,186 +1,231 @@
 <!DOCTYPE html>
-<html lang="mn">
+<html lang="mn" class="h-full">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>СҮЛД AI Чат</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Оператор - Ухаалаг Туслагч</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js (заавал эхэндээ ачааллах) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+    <!-- n8n Chat CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: #e0e0e0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        [x-cloak] {
+            display: none !important;
         }
 
-        .chat-container {
-            width: 90%;
-            max-width: 800px;
-            height: 85vh;
-            background: rgba(20, 20, 40, 0.8);
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+        .glass {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .header {
-            background: #00e5ff;
-            color: #000;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .message {
-            margin: 10px 0;
-            padding: 12px 18px;
-            border-radius: 18px;
-            max-width: 80%;
-            line-height: 1.5;
-        }
-
-        .user {
-            align-self: flex-end;
-            background: #00e5ff;
-            color: #000;
-            border-bottom-right-radius: 4px;
-        }
-
-        .ai {
-            align-self: flex-start;
-            background: #1e1e3f;
-            border: 1px solid #00e5ff;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-        }
-
-        .input-area {
-            display: flex;
-            padding: 15px;
-            background: #1a1a2e;
-            border-top: 1px solid #00e5ff;
-        }
-
-        input {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 30px;
-            background: #2a2a4a;
-            color: white;
-            font-size: 16px;
-        }
-
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-        }
-
-        button {
-            margin-left: 10px;
-            padding: 0 25px;
-            background: #00e5ff;
-            color: #000;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #00b8d4;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
-        }
-
-        .typing {
-            font-style: italic;
-            color: #888;
+        .gradient-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
         }
     </style>
 </head>
 
-<body>
-    <div class="chat-container">
-        <div class="header">СҮЛД СИСТЕМ – Ухаалаг Ассистент</div>
-        <div class="messages" id="messages">
-            <div class="message ai">
-                Сайн байна уу! Би СҮЛД системийн ухаалаг ассистент.
-                Аюулгүй байдал, хяналт, ирээдүйн боломжуудын талаар асуугаарай – би бүрэн хариулна 😊
+<body class="h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+
+    <div x-data="app()" x-cloak class="min-h-screen">
+
+        <!-- НЭВТРЭХ ХЭСЭГ -->
+        <template x-if="!isLoggedIn">
+            <div
+                class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 px-4">
+                <div class="glass rounded-3xl shadow-2xl p-12 max-w-md w-full">
+                    <div class="text-center mb-10">
+                        <h1 class="text-6xl font-extrabold text-white drop-shadow-2xl">ОПЕРАТОР</h1>
+                        <p class="text-blue-100 text-xl mt-4 font-medium">Их Хар Сүлд ХХК - Хяналтын Систем</p>
+                    </div>
+                    <form @submit.prevent="login" class="space-y-8">
+                        <input x-model="loginForm.username" placeholder="Нэвтрэх нэр" required
+                            class="w-full px-8 py-5 rounded-2xl border-2 border-blue-300 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/40 text-xl font-medium">
+                        <input type="password" x-model="loginForm.password" placeholder="Нууц үг" required
+                            class="w-full px-8 py-5 rounded-2xl border-2 border-blue-300 focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/40 text-xl font-medium">
+                        <button type="submit"
+                            class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-6 rounded-2xl text-2xl shadow-2xl transform hover:scale-105 transition duration-300">
+                            НЭВТРЭХ
+                        </button>
+                    </form>
+                    <p class="text-center mt-8 text-blue-200 text-lg">Туршилт: <code
+                            class="bg-white/20 px-4 py-2 rounded-xl font-mono">operator / 123</code></p>
+                </div>
             </div>
-        </div>
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Мессеж бичнэ үү..." autocomplete="off">
-            <button onclick="sendMessage()">Илгээх</button>
-        </div>
+        </template>
+
+        <!-- ГОЛ СИСТЕМ -->
+        <template x-if="isLoggedIn">
+            <div class="flex h-screen overflow-hidden">
+
+                <!-- Sidebar -->
+                <div x-data="{ open: false }" :class="open ? 'translate-x-0' : '-translate-x-full'"
+                    class="fixed inset-y-0 left-0 z-50 w-80 gradient-header text-white transform transition lg:translate-x-0 lg:static shadow-2xl">
+                    <div class="p-8 border-b border-white/20 text-center">
+                        <div
+                            class="w-36 h-36 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center text-6xl font-bold">
+                            🤖</div>
+                        <p class="text-3xl font-bold mt-4">Оператор</p>
+                        <p class="text-lg opacity-90" x-text="user.name"></p>
+                    </div>
+                    <nav class="mt-8">
+                        <template x-for="item in menu">
+                            <a href="#" @click.prevent="currentView = item.id; open = false"
+                                :class="currentView === item.id ? 'bg-white/25 border-r-8 border-yellow-400' : 'hover:bg-white/10'"
+                                class="flex items-center gap-5 px-10 py-6 text-xl font-semibold transition">
+                                <span class="material-icons-round text-4xl" x-text="item.icon"></span>
+                                <span x-text="item.name"></span>
+                            </a>
+                        </template>
+                    </nav>
+                </div>
+
+                <!-- Mobile overlay -->
+                <div x-show="open" @click="open = false" class="fixed inset-0 bg-black/70 z-40 lg:hidden"></div>
+
+                <!-- Гол контент -->
+                <div class="flex-1 flex flex-col">
+                    <header
+                        class="bg-white/90 backdrop-blur-xl shadow-xl border-b border-gray-200 px-8 py-5 flex items-center justify-between sticky top-0 z-30">
+                        <button @click="open = !open" class="lg:hidden p-4 rounded-xl hover:bg-gray-100">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                        <h1 class="text-3xl font-bold text-gray-800" x-text="pageTitle"></h1>
+                        <div class="flex items-center gap-6">
+                            <span class="hidden lg:block text-xl font-medium text-gray-700" x-text="user.name"></span>
+                            <div class="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-xl"
+                                x-text="user.name.charAt(0)"></div>
+                        </div>
+                    </header>
+
+                    <main class="flex-1 overflow-y-auto p-8 lg:p-12">
+
+                        <!-- Хяналтын самбар -->
+                        <template x-if="currentView === 'dashboard'">
+                            <div class="space-y-12">
+                                <h2 class="text-4xl font-extrabold text-gray-800">Хяналтын самбар</h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                    <div class="glass rounded-3xl p-10">
+                                        <div class="text-6xl font-bold text-blue-700">24</div>
+                                        <p class="text-2xl text-gray-600 mt-4">Нийт дуудлага</p>
+                                    </div>
+                                    <div class="glass rounded-3xl p-10">
+                                        <div class="text-6xl font-bold text-yellow-600">8</div>
+                                        <p class="text-2xl text-gray-600 mt-4">Хүлээгдэж буй</p>
+                                    </div>
+                                    <div class="glass rounded-3xl p-10">
+                                        <div class="text-6xl font-bold text-orange-600">10</div>
+                                        <p class="text-2xl text-gray-600 mt-4">Хийгдэж байна</p>
+                                    </div>
+                                    <div class="glass rounded-3xl p-10">
+                                        <div class="text-6xl font-bold text-green-600">6</div>
+                                        <p class="text-2xl text-gray-600 mt-4">Хаагдсан</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Ухаалаг туслагч -->
+                        <template x-if="currentView === 'ai_assistant'">
+                            <div class="h-full flex flex-col">
+                                <h2 class="text-4xl font-extrabold text-gray-800 mb-8">Ухаалаг Туслагч</h2>
+                                <div class="glass rounded-3xl shadow-2xl flex-1 overflow-hidden flex flex-col">
+                                    <div
+                                        class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 text-center">
+                                        <h3 class="text-3xl font-bold flex items-center justify-center gap-4">
+                                            <span class="material-icons-round text-5xl">smart_toy</span>
+                                            Их Хар Сүлд AI Туслагч
+                                        </h3>
+                                        <p class="text-xl mt-2 opacity-90">Танд юугаар туслах вэ? 🛡️</p>
+                                    </div>
+                                    <div id="n8n-chat-container" class="flex-1 bg-gray-50"></div>
+                                </div>
+                            </div>
+                        </template>
+
+                    </main>
+                </div>
+            </div>
+        </template>
     </div>
 
+    <!-- Alpine.js логикийг энд тавина -->
     <script>
-    async function sendMessage() {
-        const input = document.getElementById('userInput');
-        const msg = input.value.trim();
-        if (!msg) return;
+        function app() {
+            return {
+                isLoggedIn: false,
+                user: { name: '' },
+                loginForm: { username: '', password: '' },
+                currentView: 'dashboard',
+                pageTitle: 'Хяналтын самбар',
 
-        addMessage(msg, 'user');
-        input.value = '';
+                menu: [
+                    { id: 'dashboard', name: 'Хяналтын самбар', icon: 'dashboard' },
+                    { id: 'ai_assistant', name: 'Ухаалаг Туслагч', icon: 'smart_toy' },
+                ],
 
-        const typingDiv = addMessage('Бичиж байна...', 'ai');
-        typingDiv.classList.add('typing');
+                login() {
+                    if (this.loginForm.username === 'operator' && this.loginForm.password === '123') {
+                        this.user.name = 'Оператор Амар';
+                        this.isLoggedIn = true;
+                    } else {
+                        alert('Нэвтрэх нэр: operator\nНууц үг: 123');
+                    }
+                },
 
-        try {
-            const response = await fetch('https://enkhtur.app.n8n.cloud/webhook/suld-ai', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg })
-            });
+                init() {
+                    this.$watch('currentView', (newView) => {
+                        const titles = {
+                            dashboard: 'Хяналтын самбар',
+                            ai_assistant: 'Ухаалаг Туслагч',
+                        };
+                        this.pageTitle = titles[newView] || 'Хяналтын самбар';
 
-            if (!response.ok) throw new Error('Network error');
+                        if (newView === 'ai_assistant') {
+                            this.$nextTick(() => this.loadN8nChat());
+                        }
+                    });
+                },
 
-            const data = await response.json();
+                loadN8nChat() {
+                    if (document.getElementById('n8n-chat-script')) return;
 
-            typingDiv.remove();
-            // Энд n8n-ээс яг ямар талбараар ирж байгааг ашигла (text эсвэл reply)
-            addMessage(data.reply || data.text || data.content || "Уучлаарай, хариу ирсэнгүй.", 'ai');
-        } catch (error) {
-            typingDiv.remove();
-            addMessage("Алдаа гарлаа. Сервертэй холбогдож чадсангүй.", 'ai');
-        }
-    }
+                    const script = document.createElement('script');
+                    script.id = 'n8n-chat-script';
+                    script.type = 'module';
+                    script.innerHTML = `
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 
-    function addMessage(text, sender) {
-        const messages = document.getElementById('messages');
-        const div = document.createElement('div');
-        div.className = `message ${sender}`;
-        div.textContent = text;
-        messages.appendChild(div);
-        messages.scrollTop = messages.scrollHeight;
-        return div;
-    }
-
-    document.getElementById('userInput').addEventListener('keypress', e => {
-        if (e.key === 'Enter') sendMessage();
+    createChat({
+      webhookUrl: 'https://enkhtur.app.n8n.cloud/webhook/956a3561-2f91-4b22-94d2-daaeefb400fa',
+      target: '#n8n-chat-container',
+      mode: 'fullscreen',
+      title: 'AI Туслагч',
+      placeholder: 'Асуултаа бичнэ үү...',
+      welcomeMessage: 'Сайн байна уу! 🛡️\\nИх Хар Сүлд системд тавтай морилно уу.\\nТанд юугаар туслах вэ?',
+      primaryColor: '#3b82f6',
+      showWelcomeScreen: true,
     });
+  `;
+                    document.body.appendChild(script);
+                }
+            }
+        }
+    </script>
 
-    // Эхний мессеж нэг удаа гарна
-    window.onload = () => {
-        addMessage("Сайн байна уу! Би СҮЛД системийн ухаалаг ассистент. Аюулгүй байдал, дуудлага хариулах талаар асуугаарай 😊", 'ai');
-    };
-</script>
 </body>
 
 </html>
