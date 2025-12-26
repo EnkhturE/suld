@@ -3,85 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Их Хар Сүлд - Ухаалаг Туслагч</title>
+  <title>Их Хар Сүлд - AI Туслагч</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <style>
-    .glass { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.3); }
-    .gradient-header { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%); }
-    .chat-bubble-user { background: #3b82f6; color: white; align-self: end; }
-    .chat-bubble-bot { background: #e5e7eb; color: #111; align-self: start; }
+    .chat-container { max-width: 800px; margin: 0 auto; }
+    .message-user { background: #3b82f6; color: white; border-radius: 20px 20px 5px 20px; align-self: flex-end; }
+    .message-bot { background: #e5e7eb; color: #111; border-radius: 20px 20px 20px 5px; align-self: flex-start; }
   </style>
 </head>
-<body class="h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+<body class="bg-gradient-to-br from-slate-100 to-blue-50 min-h-screen flex flex-col">
 
-<div class="min-h-screen flex flex-col">
-  <header class="gradient-header text-white p-6 text-center shadow-xl">
-    <h1 class="text-4xl font-bold flex items-center justify-center gap-4">
-      <span class="material-icons-round text-6xl">smart_toy</span>
-      Их Хар Сүлд AI Туслагч
+  <header class="bg-gradient-to-r from-blue-800 to-indigo-900 text-white p-6 text-center shadow-lg">
+    <h1 class="text-3xl font-bold flex items-center justify-center gap-4">
+      <span>🛡️</span> Их Хар Сүлд AI Туслагч
     </h1>
-    <p class="text-xl mt-2">Танд юугаар туслах вэ? 🛡️</p>
+    <p class="text-lg mt-2 opacity-90">Танд юугаар туслах вэ?</p>
   </header>
 
-  <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+  <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-4 chat-container flex flex-col"></div>
 
-  <div class="p-6 glass mx-4 mb-4 rounded-3xl shadow-2xl">
-    <div class="flex gap-4">
-      <input id="user-input" type="text" placeholder="Асуултаа бичнэ үү..." class="flex-1 px-6 py-4 rounded-2xl border border-gray-300 focus:outline-none focus:ring-4 focus:ring-blue-400 text-xl">
-      <button onclick="sendMessage()" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-4 rounded-2xl font-bold text-xl shadow-lg hover:scale-105 transition">
+  <div class="p-4 bg-white shadow-lg">
+    <div class="flex gap-3 max-w-4xl mx-auto">
+      <input id="input" type="text" placeholder="Асуултаа бичнэ үү..." class="flex-1 px-6 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-4 focus:ring-blue-400 text-lg">
+      <button onclick="send()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg transition">
         Илгээх
       </button>
     </div>
   </div>
-</div>
 
-<script>
-  const webhookUrl = 'https://enkhtur.app.n8n.cloud/webhook/956a3561-2f91-4b22-94d2-daaeefb400fa/chat'; // энд шинэ webhook URL-ээ оруул (жишээ: /suld-chat хүртэл)
-  const messagesDiv = document.getElementById('chat-messages');
-  const input = document.getElementById('user-input');
+  <script>
+    const webhookUrl = 'https://enkhtur.app.n8n.cloud/webhook-test/suld-ai'; // энд шинэ webhook URL оруул
+    const messages = document.getElementById('messages');
+    const input = document.getElementById('input');
 
-  // Анхны мессеж
-  addMessage('bot', 'Сайн байна уу! 🛡️ Танд юугаар туслах вэ?');
+    // Анхны мессеж
+    addBotMessage('Сайн байна уу! 🛡️ Танд юугаар туслах вэ?');
 
-  async function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
+    async function send() {
+      const text = input.value.trim();
+      if (!text) return;
 
-    addMessage('user', text);
-    input.value = '';
-    input.disabled = true;
+      addUserMessage(text);
+      input.value = '';
+      input.disabled = true;
 
-    try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
-      });
+      try {
+        const res = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
 
-      const data = await response.json();
-      const botReply = data.reply || 'Хариу ирсэнгүй.';
-      addMessage('bot', botReply);
-    } catch (err) {
-      addMessage('bot', 'Алдаа гарлаа: ' + err.message);
+        const data = await res.json();
+        addBotMessage(data.reply || 'Хариу алга.');
+      } catch (err) {
+        addBotMessage('Алдаа: ' + err.message);
+      }
+
+      input.disabled = false;
+      input.focus();
     }
 
-    input.disabled = false;
-    input.focus();
-  }
+    function addUserMessage(text) {
+      const div = document.createElement('div');
+      div.className = 'message-user max-w-md px-6 py-4 shadow-lg';
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
 
-  function addMessage(sender, text) {
-    const bubble = document.createElement('div');
-    bubble.className = `max-w-lg px-6 py-4 rounded-3xl shadow-lg ${sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot'}`;
-    bubble.textContent = text;
-    messagesDiv.appendChild(bubble);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
+    function addBotMessage(text) {
+      const div = document.createElement('div');
+      div.className = 'message-bot max-w-md px-6 py-4 shadow-lg';
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
 
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage();
-  });
-</script>
+    input.addEventListener('keypress', e => e.key === 'Enter' && send());
+  </script>
 
 </body>
 </html>
